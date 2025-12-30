@@ -31,6 +31,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       businesses: {
         Row: {
@@ -66,6 +67,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       business_members: {
         Row: {
@@ -92,6 +94,7 @@ export interface Database {
           equity_percentage?: number
           joined_at?: string
         }
+        Relationships: []
       }
       transaction_categories: {
         Row: {
@@ -118,6 +121,7 @@ export interface Database {
           display_order?: number | null
           is_active?: boolean
         }
+        Relationships: []
       }
       transactions: {
         Row: {
@@ -171,6 +175,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       capital_contributions: {
         Row: {
@@ -206,6 +211,7 @@ export interface Database {
           contribution_date?: string
           created_at?: string
         }
+        Relationships: []
       }
       profit_distributions: {
         Row: {
@@ -247,6 +253,7 @@ export interface Database {
           created_by?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       profit_allocations: {
         Row: {
@@ -273,6 +280,7 @@ export interface Database {
           allocated_amount?: number
           created_at?: string
         }
+        Relationships: []
       }
       withdrawals: {
         Row: {
@@ -305,6 +313,7 @@ export interface Database {
           created_by?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       activity_logs: {
         Row: {
@@ -337,6 +346,7 @@ export interface Database {
           details?: Json | null
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: {
