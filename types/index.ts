@@ -109,7 +109,7 @@ export interface CapitalAccountsReport {
 
 // Form types
 export interface TransactionFormData {
-  category_id: string
+  category_id?: string
   amount: number
   type: 'revenue' | 'expense'
   payment_source: string // 'business' or user_id
