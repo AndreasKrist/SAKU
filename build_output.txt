@@ -1,0 +1,58 @@
+
+> saku-umkm@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/18) ...
+   Generating static pages (4/18) 
+   Generating static pages (8/18) 
+   Generating static pages (13/18) 
+ ✓ Generating static pages (18/18)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    158 B          87.5 kB
+├ ○ /_not-found                          873 B          88.2 kB
+├ ƒ /account/settings                    792 B           142 kB
+├ ƒ /api/businesses/[id]                 0 B                0 B
+├ ƒ /api/businesses/[id]/equity          0 B                0 B
+├ ƒ /api/businesses/[id]/members         0 B                0 B
+├ ƒ /api/profit/preview                  0 B                0 B
+├ ƒ /api/reports/capital                 0 B                0 B
+├ ƒ /api/reports/cash-flow               0 B                0 B
+├ ƒ /api/reports/profit-loss             0 B                0 B
+├ ƒ /auth/callback                       0 B                0 B
+├ ƒ /bisnis/[id]                         1.05 kB         105 kB
+├ ƒ /bisnis/[id]/aktivitas               1.02 kB          96 kB
+├ ƒ /bisnis/[id]/distribusi-laba         5.21 kB         147 kB
+├ ƒ /bisnis/[id]/laporan                 7.5 kB          116 kB
+├ ƒ /bisnis/[id]/mitra                   3.86 kB         131 kB
+├ ƒ /bisnis/[id]/modal                   7.25 kB         164 kB
+├ ƒ /bisnis/[id]/setup-mitra             9.12 kB         113 kB
+├ ƒ /bisnis/[id]/transaksi               5.82 kB         167 kB
+├ ƒ /bisnis/buat                         3.72 kB         117 kB
+├ ƒ /bisnis/gabung                       3.47 kB         117 kB
+├ ƒ /dashboard                           212 B           141 kB
+├ ○ /login                               3.69 kB         194 kB
+├ ƒ /logout                              0 B                0 B
+├ ƒ /onboarding                          1.05 kB         105 kB
+├ ○ /signup                              4 kB            195 kB
+└ ƒ /test-auth                           158 B          87.5 kB
++ First Load JS shared by all            87.3 kB
+  ├ chunks/117-1b7314ddb3b863f9.js       31.7 kB
+  ├ chunks/fd9d1056-9d1930fde9276fd6.js  53.6 kB
+  └ other shared chunks (total)          1.96 kB
+
+
+ƒ Middleware                             73.1 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

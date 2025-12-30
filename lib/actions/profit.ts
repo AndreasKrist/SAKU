@@ -47,6 +47,9 @@ export async function distributeProfits(
   const amountToDistribute =
     profitLoss.net_profit * (formData.distribution_percentage / 100)
 
+  // Calculate retained amount
+  const retainedAmount = profitLoss.net_profit - amountToDistribute
+
   // Create profit distribution record
   const { data: distribution, error: distributionError } = await supabase
     .from('profit_distributions')
@@ -56,7 +59,9 @@ export async function distributeProfits(
       period_end: formData.period_end,
       total_profit: profitLoss.net_profit,
       distributed_amount: amountToDistribute,
+      retained_amount: retainedAmount,
       distribution_percentage: formData.distribution_percentage,
+      distribution_date: new Date().toISOString().split('T')[0],
       created_by: user.id,
     })
     .select()
