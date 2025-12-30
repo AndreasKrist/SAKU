@@ -18,7 +18,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
     redirect('/login')
   }
 
-  const business = await getBusinessById(params.id)
+  const business = (await getBusinessById(params.id)) as any
   if (!business) {
     redirect('/dashboard')
   }
@@ -37,7 +37,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
   const needsEquitySetup = Math.abs(totalEquity - 100) > 0.01
 
   // Get business stats for delete confirmation
-  const stats = await getBusinessStats(params.id)
+  const stats = (await getBusinessStats(params.id)) as any
 
   return (
     <div className="space-y-6">

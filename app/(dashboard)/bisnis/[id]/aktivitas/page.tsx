@@ -49,7 +49,7 @@ export default async function AktivitasPage({ params }: { params: { id: string }
     redirect('/login')
   }
 
-  const business = await getBusinessById(params.id)
+  const business = (await getBusinessById(params.id)) as any
   if (!business) {
     redirect('/dashboard')
   }

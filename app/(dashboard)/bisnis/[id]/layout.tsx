@@ -19,7 +19,7 @@ export default async function BusinessLayout({
   }
 
   // Get business
-  const business = await getBusinessById(params.id)
+  const business = (await getBusinessById(params.id)) as any
 
   if (!business) {
     redirect('/dashboard')
