@@ -40,7 +40,7 @@ export default async function BusinessLayout({
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar businessId={params.id} />
       <div className="flex-1 flex flex-col">
-        <TopBar user={user} currentBusiness={business} businesses={allBusinesses} businessId={params.id} />
+        <TopBar user={user as any} currentBusiness={business as any} businesses={allBusinesses} businessId={params.id} />
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
     </div>
