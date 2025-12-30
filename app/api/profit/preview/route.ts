@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const profitLoss = await calculateProfitLoss(businessId, periodStart, periodEnd)
 
     // Get members for allocation
-    const members = await getBusinessMembers(businessId)
+    const members = (await getBusinessMembers(businessId)) as any[]
 
     // Calculate distribution
     const percentage = distributionPercentage || 100
