@@ -129,7 +129,7 @@ export async function createBusiness(formData: {
     user_id: user.id,
     role: 'owner',
     equity_percentage: 100,
-  })
+  } as any)
 
   if (memberError) {
     return { error: memberError.message }
@@ -143,7 +143,7 @@ export async function createBusiness(formData: {
     entity_type: 'business',
     entity_id: business.id,
     details: { business_name: formData.name },
-  })
+  } as any)
 
   revalidatePath('/dashboard')
   return { success: true, business, businessId: business.id }
@@ -214,7 +214,7 @@ export async function joinBusiness(businessCode: string) {
     user_id: user.id,
     role: 'member',
     equity_percentage: 0,
-  })
+  } as any)
 
   if (memberError) {
     return { error: memberError.message }
@@ -228,7 +228,7 @@ export async function joinBusiness(businessCode: string) {
     entity_type: 'business_member',
     entity_id: business.id,
     details: { user_id: user.id },
-  })
+  } as any)
 
   revalidatePath('/dashboard')
   return { success: true, business }
@@ -275,7 +275,8 @@ export async function updateEquityDistribution(
     .eq('user_id', user.id)
     .single()
 
-  if (!membership || membership.role !== 'owner') {
+  const membershipData = membership as any
+  if (!membershipData || membershipData.role !== 'owner') {
     return { error: 'Hanya pemilik yang dapat mengubah distribusi ekuitas' }
   }
 
@@ -289,7 +290,7 @@ export async function updateEquityDistribution(
   for (const dist of distributions) {
     const { error } = await supabase
       .from('business_members')
-      .update({ equity_percentage: dist.percentage })
+      .update({ equity_percentage: dist.percentage } as any)
       .eq('business_id', businessId)
       .eq('user_id', dist.userId)
 
@@ -306,7 +307,7 @@ export async function updateEquityDistribution(
     entity_type: 'business',
     entity_id: businessId,
     details: { distributions },
-  })
+  } as any)
 
   revalidatePath(`/bisnis/${businessId}`)
   return { success: true }
@@ -331,7 +332,8 @@ export async function deleteBusiness(businessId: string) {
     .eq('user_id', user.id)
     .single()
 
-  if (!membership || membership.role !== 'owner') {
+  const membershipData2 = membership as any
+  if (!membershipData2 || membershipData2.role !== 'owner') {
     return { error: 'Hanya pemilik yang dapat menghapus bisnis' }
   }
 
@@ -417,14 +419,15 @@ export async function toggleAutoUpdateEquity(businessId: string, enabled: boolea
     .eq('user_id', user.id)
     .single()
 
-  if (!membership || membership.role !== 'owner') {
+  const membershipData3 = membership as any
+  if (!membershipData3 || membershipData3.role !== 'owner') {
     return { error: 'Hanya pemilik yang dapat mengubah pengaturan bisnis' }
   }
 
   // Update setting
   const { error } = await supabase
     .from('businesses')
-    .update({ auto_update_equity_on_contribution: enabled })
+    .update({ auto_update_equity_on_contribution: enabled } as any)
     .eq('id', businessId)
 
   if (error) {
@@ -443,7 +446,7 @@ export async function toggleAutoUpdateEquity(businessId: string, enabled: boolea
       value: enabled,
       description: `Auto-update ekuitas ${enabled ? 'diaktifkan' : 'dinonaktifkan'}`
     },
-  })
+  } as any)
 
   revalidatePath(`/bisnis/${businessId}`)
   return { success: true }
