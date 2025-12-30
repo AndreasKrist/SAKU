@@ -53,6 +53,7 @@ export function ProfitLossReport({ businessId }: ProfitLossReportProps) {
 
   useEffect(() => {
     generateReport()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

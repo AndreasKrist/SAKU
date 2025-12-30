@@ -65,7 +65,7 @@ export function AutoUpdateEquityToggle({
             <p className={`text-sm ${enabled ? 'text-green-700' : 'text-muted-foreground'}`}>
               {enabled
                 ? 'Aktif: Ekuitas otomatis update setiap ada kontribusi modal baru atau dihapus'
-                : 'Nonaktif: Anda perlu manual klik "Terapkan" untuk update ekuitas'}
+                : 'Nonaktif: Anda perlu manual klik &quot;Terapkan&quot; untuk update ekuitas'}
             </p>
             <div
               className={`flex items-start gap-2 mt-3 p-3 rounded-lg ${
@@ -78,13 +78,13 @@ export function AutoUpdateEquityToggle({
                   <>
                     <strong>Mode Otomatis:</strong> Saat ada kontribusi modal baru, ekuitas
                     semua anggota akan langsung dihitung ulang berdasarkan proporsi kontribusi.
-                    Tidak perlu lagi klik "Terapkan" manual!
+                    Tidak perlu lagi klik &quot;Terapkan&quot; manual!
                   </>
                 ) : (
                   <>
                     <strong>Mode Manual:</strong> Ekuitas tidak akan berubah meskipun ada
-                    kontribusi baru. Anda harus manual ke halaman "Atur Ekuitas" dan klik
-                    "Terapkan" untuk update.
+                    kontribusi baru. Anda harus manual ke halaman &quot;Atur Ekuitas&quot; dan klik
+                    &quot;Terapkan&quot; untuk update.
                   </>
                 )}
               </p>

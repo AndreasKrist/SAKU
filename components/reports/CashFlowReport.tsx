@@ -54,6 +54,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
 
   useEffect(() => {
     generateReport()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

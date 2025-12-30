@@ -33,6 +33,7 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchMembers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
