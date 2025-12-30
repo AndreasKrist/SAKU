@@ -19,7 +19,7 @@ export async function logActivity(data: {
     entity_type: data.entity_type || null,
     entity_id: data.entity_id || null,
     details: data.details || null,
-  })
+  } as any)
 
   if (error) {
     console.error('Failed to log activity:', error)
