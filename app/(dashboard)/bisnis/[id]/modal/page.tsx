@@ -200,7 +200,7 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
                     type: 'contribution' as const,
                     date: c.contribution_date,
                   })),
-                  ...(withdrawals || []).map((w) => ({
+                  ...withdrawalsList.map((w) => ({
                     ...w,
                     type: 'withdrawal' as const,
                     date: w.withdrawal_date,
