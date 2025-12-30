@@ -44,6 +44,8 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
     .eq('business_id', params.id)
     .order('withdrawal_date', { ascending: false })
 
+  const withdrawalsList = (withdrawals || []) as any[]
+
   const totalCapital = capitalAccounts.reduce((sum, acc) => sum + acc.current_balance, 0)
 
   return (
@@ -146,13 +148,13 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
               <CardTitle>Riwayat Penarikan</CardTitle>
             </CardHeader>
             <CardContent>
-              {!withdrawals || withdrawals.length === 0 ? (
+              {!withdrawalsList || withdrawalsList.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
                   Belum ada penarikan modal
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {withdrawals.map((withdrawal) => (
+                  {withdrawalsList.map((withdrawal) => (
                     <div
                       key={withdrawal.id}
                       className="flex items-center justify-between border-b pb-3 last:border-0"

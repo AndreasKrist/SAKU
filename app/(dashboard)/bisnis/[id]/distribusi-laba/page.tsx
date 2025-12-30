@@ -40,6 +40,8 @@ export default async function DistribusiLabaPage({ params }: { params: { id: str
     .eq('business_id', params.id)
     .order('created_at', { ascending: false })
 
+  const distributionsList = (distributions || []) as any[]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -98,7 +100,7 @@ export default async function DistribusiLabaPage({ params }: { params: { id: str
         </CardHeader>
         <CardContent>
           <DistributionHistory
-            distributions={distributions || []}
+            distributions={distributionsList}
             userRole={userMember.role}
             businessId={params.id}
           />
