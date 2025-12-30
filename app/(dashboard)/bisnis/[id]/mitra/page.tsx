@@ -30,7 +30,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
     redirect('/dashboard')
   }
 
-  const capitalAccounts = await getPartnerCapitalAccounts(params.id)
+  const capitalAccounts = (await getPartnerCapitalAccounts(params.id)) as any[]
 
   // Check equity total
   const totalEquity = members.reduce((sum, m) => sum + Number(m.equity_percentage), 0)

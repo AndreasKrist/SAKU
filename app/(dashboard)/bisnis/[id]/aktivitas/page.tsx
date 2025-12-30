@@ -61,7 +61,7 @@ export default async function AktivitasPage({ params }: { params: { id: string }
     redirect('/dashboard')
   }
 
-  const activities = await getActivityLogs(params.id, 100)
+  const activities = (await getActivityLogs(params.id, 100)) as any[]
 
   return (
     <div className="space-y-6">

@@ -34,7 +34,7 @@ export default async function BusinessLayout({
   }
 
   // Get all user's businesses for TopBar
-  const allBusinesses = await getUserBusinesses(user.id)
+  const allBusinesses = (await getUserBusinesses(user.id)) as any[]
 
   return (
     <div className="flex min-h-screen bg-gray-50">

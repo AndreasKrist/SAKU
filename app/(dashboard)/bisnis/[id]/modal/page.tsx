@@ -33,8 +33,8 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
     redirect('/dashboard')
   }
 
-  const capitalAccounts = await getPartnerCapitalAccounts(params.id)
-  const contributions = await getCapitalContributions(params.id)
+  const capitalAccounts = (await getPartnerCapitalAccounts(params.id)) as any[]
+  const contributions = (await getCapitalContributions(params.id)) as any[]
 
   // Get withdrawals
   const supabase = await createClient()

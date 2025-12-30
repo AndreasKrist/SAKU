@@ -47,10 +47,10 @@ export default async function BusinessDashboardPage({
   const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-  const transactions = await getBusinessTransactions(params.id, {
+  const transactions = (await getBusinessTransactions(params.id, {
     startDate: firstDayOfMonth.toISOString().split('T')[0],
     endDate: lastDayOfMonth.toISOString().split('T')[0],
-  })
+  })) as any[]
 
   // Calculate totals
   const totalRevenue = transactions
@@ -64,7 +64,7 @@ export default async function BusinessDashboardPage({
   const netProfit = totalRevenue - totalExpense
 
   // Get capital accounts
-  const capitalAccounts = await getPartnerCapitalAccounts(params.id)
+  const capitalAccounts = (await getPartnerCapitalAccounts(params.id)) as any[]
   const totalCapital = capitalAccounts.reduce(
     (sum, acc) => sum + acc.current_balance,
     0
