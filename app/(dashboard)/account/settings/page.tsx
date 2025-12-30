@@ -15,7 +15,7 @@ export default async function AccountSettingsPage() {
     redirect('/login')
   }
 
-  const businesses = await getUserBusinesses(user.id)
+  const businesses = (await getUserBusinesses(user.id)) as any[]
   const userMetadata = user.user_metadata || {}
 
   return (
