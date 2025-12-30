@@ -54,7 +54,7 @@ export default async function AktivitasPage({ params }: { params: { id: string }
     redirect('/dashboard')
   }
 
-  const members = await getBusinessMembers(params.id)
+  const members = (await getBusinessMembers(params.id)) as any[]
   const userMember = members.find((m) => m.user_id === user.id)
 
   if (!userMember) {

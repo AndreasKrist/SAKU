@@ -20,7 +20,7 @@ export default async function DashboardPage() {
     redirect('/login')
   }
 
-  const businesses = await getUserBusinesses(user.id)
+  const businesses = (await getUserBusinesses(user.id)) as any[]
 
   // If no businesses, redirect to onboarding
   if (!businesses || businesses.length === 0) {
