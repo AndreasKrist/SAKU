@@ -17,7 +17,7 @@ import { ChevronDown, LogOut, Building2, Settings, User } from 'lucide-react'
 import { MobileNav } from './MobileNav'
 
 interface TopBarProps {
-  user: Profile
+  user: any
   currentBusiness?: Business
   businesses: { business: Business }[]
   businessId?: string
