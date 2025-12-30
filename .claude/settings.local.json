@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app:*)",
+      "Bash(npx shadcn@latest add button input label card form select table dialog dropdown-menu tabs separator badge avatar --yes)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(Get-Content \"C:\\\\Users\\\\andre\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--Pictures-SAKU\\\\tasks\\\\*.output\" -Tail 100)",
+      "Bash(Select-String -Pattern \"error|Error|ERROR|exception|Exception\" -Context 2,2)",
+      "Bash(npm run dev:*)",
+      "Bash(Start-Sleep -Seconds 15)",
+      "Bash(Get-Content \"C:\\\\Users\\\\andre\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--Pictures-SAKU\\\\tasks\\\\b0bc8f5.output\" -Tail 30)",
+      "Bash(Test-Path:*)",
+      "Bash(Get-ChildItem \"D:\\\\Pictures\\\\SAKU\\\\app\\\\\\(dashboard\\)\\\\bisnis\")",
+      "Bash(Get-ChildItem \"D:\\\\Pictures\\\\SAKU\\\\app\\\\\\(dashboard\\)\\\\bisnis\" -Recurse -Filter \"page.tsx\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-Process)",
+      "Bash(Where-Object { $_ProcessName -like \"*node*\" -or $_ProcessName -like \"*next*\" })",
+      "Bash(Select-Object ProcessName, Id)",
+      "Bash(Get-Content \"C:\\\\Users\\\\andre\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\D--Pictures-SAKU\\\\tasks\\\\bbd052a.output\" -Tail 30)",
+      "Bash(Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object State, LocalAddress, LocalPort)",
+      "Bash(cd:*)",
+      "Bash(npm run build:*)"
+    ]
+  }
+}
