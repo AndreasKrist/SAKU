@@ -23,7 +23,14 @@
       "Bash(Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue)",
       "Bash(Select-Object State, LocalAddress, LocalPort)",
       "Bash(cd:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(cat:*)",
+      "Bash(powershell -Command \"\\(Get-Content ''components/capital/CapitalAccountSummary.tsx''\\) -replace ''Total Modal'', ''Total Ekuitas'' -replace ''Saldo Modal Per Mitra'', ''Ekuitas Per Mitra'' -replace ''Saldo Modal'', ''Saldo Ekuitas'' | Set-Content ''components/capital/CapitalAccountSummary.tsx''\")",
+      "Bash(powershell -Command \"\\(Get-Content ''components/capital/WithdrawalForm.tsx''\\) -replace ''Saldo Modal'', ''Saldo Ekuitas'' | Set-Content ''components/capital/WithdrawalForm.tsx''\")",
+      "Bash(powershell -Command \"\\(Get-Content ''components/reports/CapitalAccountsReport.tsx''\\) -replace ''Total Modal Bisnis'', ''Total Ekuitas Bisnis'' -replace ''Saldo Modal'', ''Saldo Ekuitas'' -replace ''Total Modal'', ''Total Ekuitas'' -replace ''Laporan Modal Mitra'', ''Laporan Ekuitas Mitra'' -replace ''Rincian Modal Per Mitra'', ''Rincian Ekuitas Per Mitra'' | Set-Content ''components/reports/CapitalAccountsReport.tsx''\")",
+      "Bash(powershell -Command:*)",
+      "Bash(grep:*)",
+      "Bash(npx tsc --noEmit)"
     ]
   }
 }

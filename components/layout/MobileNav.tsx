@@ -11,7 +11,6 @@ import {
   Receipt,
   Wallet,
   FileText,
-  TrendingUp,
   Activity,
 } from 'lucide-react'
 import {
@@ -45,18 +44,13 @@ const menuItems = [
   },
   {
     href: '/modal',
-    label: 'Modal',
+    label: 'Modal & Ekuitas',
     icon: Wallet,
   },
   {
     href: '/laporan',
     label: 'Laporan',
     icon: FileText,
-  },
-  {
-    href: '/distribusi-laba',
-    label: 'Distribusi Laba',
-    icon: TrendingUp,
   },
   {
     href: '/aktivitas',

@@ -53,7 +53,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Laporan Modal Mitra</CardTitle>
+              <CardTitle>Laporan Ekuitas Mitra</CardTitle>
               <CardDescription>
                 Per tanggal:{' '}
                 {new Date(report.period_end).toLocaleDateString('id-ID', {
@@ -78,7 +78,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
             {/* Total Capital Summary */}
             <div className="bg-purple-50 p-6 rounded-lg">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">Total Modal Bisnis</p>
+                <p className="text-sm text-muted-foreground mb-2">Total Ekuitas Bisnis</p>
                 <p className="text-4xl font-bold text-purple-600">
                   {formatRupiah(report.total_capital)}
                 </p>
@@ -89,7 +89,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
 
             {/* Per Partner Details */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Rincian Modal Per Mitra</h3>
+              <h3 className="font-semibold text-lg">Rincian Ekuitas Per Mitra</h3>
 
               {report.accounts.map((account) => (
                 <div key={account.user_id} className="border rounded-lg p-4">
@@ -101,7 +101,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground mb-1">Saldo Modal</p>
+                      <p className="text-xs text-muted-foreground mb-1">Saldo Ekuitas</p>
                       <p className="text-2xl font-bold text-purple-600">
                         {formatRupiah(account.current_balance)}
                       </p>
@@ -187,7 +187,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                 </p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Total Modal</p>
+                <p className="text-sm text-muted-foreground mb-1">Total Ekuitas</p>
                 <p className="text-lg font-bold text-purple-600">
                   {formatRupiah(report.total_capital)}
                 </p>

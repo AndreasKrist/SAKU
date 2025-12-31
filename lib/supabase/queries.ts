@@ -157,7 +157,7 @@ export async function getCapitalContributions(
 // =====================================================
 
 // Cache capital accounts for request duration
-// This is an expensive calculation with 4 queries + aggregations
+// Calculates profit share from transactions directly (not from profit_allocations)
 export const getPartnerCapitalAccounts = cache(
   async (businessId: string): Promise<PartnerCapitalAccount[]> => {
     const supabase = await createClient()
@@ -178,17 +178,26 @@ export const getPartnerCapitalAccounts = cache(
 
     if (contributionsError) throw contributionsError
 
-    // Get all profit allocations
-    const { data: allocations, error: allocationsError } = await supabase
-      .from('profit_allocations')
-      .select(`
-        user_id,
-        allocated_amount,
-        distribution:profit_distributions!inner(business_id)
-      `)
-      .eq('distribution.business_id', businessId)
+    // Get all transactions to calculate total profit
+    const { data: transactions, error: transactionsError } = await supabase
+      .from('transactions')
+      .select('type, amount')
+      .eq('business_id', businessId)
 
-    if (allocationsError) throw allocationsError
+    if (transactionsError) throw transactionsError
+
+    // Calculate total profit from transactions
+    let totalRevenue = 0
+    let totalExpense = 0
+    transactions?.forEach((t) => {
+      const amount = Number(t.amount)
+      if (t.type === 'revenue') {
+        totalRevenue += amount
+      } else {
+        totalExpense += amount
+      }
+    })
+    const totalBusinessProfit = totalRevenue - totalExpense
 
     // Get all withdrawals
     const { data: withdrawals, error: withdrawalsError } = await supabase
@@ -204,9 +213,9 @@ export const getPartnerCapitalAccounts = cache(
         .filter((c) => c.user_id === member.user_id)
         .reduce((sum, c) => sum + Number(c.amount), 0)
 
-      const totalProfitAllocated = allocations
-        .filter((a) => a.user_id === member.user_id)
-        .reduce((sum, a) => sum + Number(a.allocated_amount), 0)
+      // Calculate profit share based on equity percentage
+      const equityPercentage = Number(member.equity_percentage)
+      const totalProfitAllocated = totalBusinessProfit * (equityPercentage / 100)
 
       const totalWithdrawals = withdrawals
         .filter((w) => w.user_id === member.user_id)
@@ -215,7 +224,7 @@ export const getPartnerCapitalAccounts = cache(
       return {
         user_id: member.user_id,
         user_name: member.profile?.full_name || 'Unknown User',
-        equity_percentage: Number(member.equity_percentage),
+        equity_percentage: equityPercentage,
         total_contributions: totalContributions,
         total_profit_allocated: totalProfitAllocated,
         total_withdrawals: totalWithdrawals,

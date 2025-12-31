@@ -66,7 +66,7 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Modal</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Ekuitas</CardTitle>
             <Wallet className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
@@ -80,7 +80,7 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
       {/* Per Partner */}
       <Card>
         <CardHeader>
-          <CardTitle>Saldo Modal Per Mitra</CardTitle>
+          <CardTitle>Ekuitas Per Mitra</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -97,7 +97,7 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-muted-foreground">Saldo Modal</p>
+                    <p className="text-xs text-muted-foreground">Saldo Ekuitas</p>
                     <p className="text-2xl font-bold text-purple-600">
                       {formatRupiah(account.current_balance)}
                     </p>

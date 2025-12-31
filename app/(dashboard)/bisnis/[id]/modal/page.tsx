@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CapitalAccountSummary } from '@/components/capital/CapitalAccountSummary'
 import { ContributionForm } from '@/components/capital/ContributionForm'
 import { WithdrawalForm } from '@/components/capital/WithdrawalForm'
+import { GroupWithdrawalForm } from '@/components/capital/GroupWithdrawalForm'
 import { formatRupiah, formatDate } from '@/lib/utils'
 
 export default async function ModalPage({ params }: { params: { id: string } }) {
@@ -38,23 +39,40 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
 
   // Get withdrawals
   const supabase = await createClient()
-  const { data: withdrawals } = await supabase
+  const { data: withdrawals, error: withdrawalsError } = await supabase
     .from('withdrawals')
-    .select('*, profile:profiles(*)')
+    .select('*')
     .eq('business_id', params.id)
     .order('withdrawal_date', { ascending: false })
 
-  const withdrawalsList = (withdrawals || []) as any[]
+  if (withdrawalsError) {
+    console.error('Error fetching withdrawals:', withdrawalsError)
+  }
+
+  // Get profile names for withdrawals
+  const withdrawalUserIds = [...new Set((withdrawals || []).map(w => w.user_id))]
+  const { data: withdrawalProfiles } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+    .in('id', withdrawalUserIds.length > 0 ? withdrawalUserIds : ['none'])
+
+  const profileMap = new Map((withdrawalProfiles || []).map(p => [p.id, p]))
+
+  const withdrawalsList = (withdrawals || []).map(w => ({
+    ...w,
+    profile: profileMap.get(w.user_id) || { full_name: 'Unknown User' }
+  })) as any[]
 
   const totalCapital = capitalAccounts.reduce((sum, acc) => sum + acc.current_balance, 0)
+  const isOwner = userMember.role === 'owner'
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Modal Bisnis</h1>
+        <h1 className="text-3xl font-bold">Modal & Ekuitas</h1>
         <p className="text-muted-foreground mt-1">
-          Kelola kontribusi modal dan penarikan
+          Kelola kontribusi modal dan penarikan ekuitas
         </p>
       </div>
 
@@ -63,9 +81,10 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
 
       {/* Forms and History */}
       <Tabs defaultValue="contributions" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="contributions">Kontribusi Modal</TabsTrigger>
-          <TabsTrigger value="withdrawals">Penarikan Modal</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="contributions">Kontribusi</TabsTrigger>
+          <TabsTrigger value="withdrawals">Tarik Sendiri</TabsTrigger>
+          <TabsTrigger value="group">Tarik Bersama</TabsTrigger>
           <TabsTrigger value="history">Riwayat</TabsTrigger>
         </TabsList>
 
@@ -126,59 +145,132 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
         <TabsContent value="withdrawals" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Tarik Modal</CardTitle>
+              <CardTitle>Tarik Ekuitas</CardTitle>
               <CardDescription>
-                Catat penarikan modal oleh mitra bisnis (maksimal sesuai saldo)
+                Tarik bagian ekuitas Anda (kontribusi + laba - penarikan sebelumnya)
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <WithdrawalForm
+              {(() => {
+                const userAccount = capitalAccounts.find((acc) => acc.user_id === user.id)
+                return (
+                  <WithdrawalForm
+                    businessId={params.id}
+                    userId={user.id}
+                    currentBalance={userAccount?.current_balance || 0}
+                    totalContributions={userAccount?.total_contributions || 0}
+                    totalProfitShare={userAccount?.total_profit_allocated || 0}
+                    totalWithdrawals={userAccount?.total_withdrawals || 0}
+                    equityPercentage={userAccount?.equity_percentage || 0}
+                  />
+                )
+              })()}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Riwayat Penarikan Sendiri</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const individualWithdrawals = withdrawalsList.filter(w =>
+                  !w.notes?.toLowerCase().includes('penarikan bersama')
+                )
+                return individualWithdrawals.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Belum ada penarikan sendiri
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {individualWithdrawals.map((withdrawal) => (
+                      <div
+                        key={withdrawal.id}
+                        className="flex items-center justify-between border-b pb-3 last:border-0"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">{withdrawal.profile?.full_name || 'Unknown User'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDate(withdrawal.withdrawal_date)}
+                          </p>
+                          {withdrawal.notes && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {withdrawal.notes}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-red-600">
+                            -{formatRupiah(Number(withdrawal.amount))}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="group" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Penarikan Bersama</CardTitle>
+              <CardDescription>
+                Tarik ekuitas untuk semua mitra sekaligus dengan persentase yang sama
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <GroupWithdrawalForm
                 businessId={params.id}
-                userId={user.id}
-                currentBalance={
-                  capitalAccounts.find((acc) => acc.user_id === user.id)
-                    ?.current_balance || 0
-                }
+                accounts={capitalAccounts}
+                isOwner={isOwner}
               />
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Riwayat Penarikan</CardTitle>
+              <CardTitle>Riwayat Penarikan Bersama</CardTitle>
             </CardHeader>
             <CardContent>
-              {!withdrawalsList || withdrawalsList.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  Belum ada penarikan modal
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {withdrawalsList.map((withdrawal) => (
-                    <div
-                      key={withdrawal.id}
-                      className="flex items-center justify-between border-b pb-3 last:border-0"
-                    >
-                      <div className="flex-1">
-                        <p className="font-medium">{withdrawal.profile?.full_name || 'Unknown User'}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatDate(withdrawal.withdrawal_date)}
-                        </p>
-                        {withdrawal.notes && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {withdrawal.notes}
+              {(() => {
+                const groupWithdrawals = withdrawalsList.filter(w =>
+                  w.notes?.includes('Penarikan bersama') || w.notes?.includes('penarikan bersama')
+                )
+                return groupWithdrawals.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Belum ada penarikan bersama
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {groupWithdrawals.map((withdrawal) => (
+                      <div
+                        key={withdrawal.id}
+                        className="flex items-center justify-between border-b pb-3 last:border-0"
+                      >
+                        <div className="flex-1">
+                          <p className="font-medium">{withdrawal.profile?.full_name || 'Unknown User'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDate(withdrawal.withdrawal_date)}
                           </p>
-                        )}
+                          {withdrawal.notes && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {withdrawal.notes}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-red-600">
+                            -{formatRupiah(Number(withdrawal.amount))}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-red-600">
-                          -{formatRupiah(Number(withdrawal.amount))}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )
+              })()}
             </CardContent>
           </Card>
         </TabsContent>

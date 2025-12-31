@@ -255,6 +255,126 @@ export async function deleteCapitalContribution(
   return { success: true }
 }
 
+export async function createGroupWithdrawal(
+  businessId: string,
+  formData: {
+    percentage: number
+    withdrawal_date: string
+    notes?: string
+  }
+) {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'Tidak terautentikasi' }
+  }
+
+  // Verify user is owner
+  const { data: member } = await supabase
+    .from('business_members')
+    .select('role')
+    .eq('business_id', businessId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!member || member.role !== 'owner') {
+    return { error: 'Hanya pemilik yang dapat melakukan penarikan bersama' }
+  }
+
+  // Get all members
+  const { data: members } = await supabase
+    .from('business_members')
+    .select('user_id, equity_percentage')
+    .eq('business_id', businessId)
+
+  if (!members || members.length === 0) {
+    return { error: 'Tidak ada mitra ditemukan' }
+  }
+
+  // Get contributions
+  const { data: contributions } = await supabase
+    .from('capital_contributions')
+    .select('user_id, amount')
+    .eq('business_id', businessId)
+
+  // Get transactions for profit calculation
+  const { data: transactions } = await supabase
+    .from('transactions')
+    .select('type, amount')
+    .eq('business_id', businessId)
+
+  let totalRevenue = 0
+  let totalExpense = 0
+  transactions?.forEach((t) => {
+    if (t.type === 'revenue') totalRevenue += Number(t.amount)
+    else totalExpense += Number(t.amount)
+  })
+  const totalProfit = totalRevenue - totalExpense
+
+  // Get existing withdrawals
+  const { data: withdrawals } = await supabase
+    .from('withdrawals')
+    .select('user_id, amount')
+    .eq('business_id', businessId)
+
+  // Calculate and create withdrawals
+  const withdrawalsToCreate: Array<{
+    business_id: string
+    user_id: string
+    amount: number
+    notes: string
+    withdrawal_date: string
+    created_by: string
+  }> = []
+
+  for (const m of members) {
+    const userContribs = contributions?.filter((c) => c.user_id === m.user_id).reduce((sum, c) => sum + Number(c.amount), 0) || 0
+    const profitShare = totalProfit * (Number(m.equity_percentage) / 100)
+    const userWithdraws = withdrawals?.filter((w) => w.user_id === m.user_id).reduce((sum, w) => sum + Number(w.amount), 0) || 0
+    const balance = userContribs + profitShare - userWithdraws
+    const amount = Math.floor(balance * (formData.percentage / 100))
+
+    if (amount > 0) {
+      withdrawalsToCreate.push({
+        business_id: businessId,
+        user_id: m.user_id,
+        amount,
+        notes: formData.notes || 'Penarikan bersama ' + formData.percentage + '%',
+        withdrawal_date: formData.withdrawal_date,
+        created_by: user.id,
+      })
+    }
+  }
+
+  if (withdrawalsToCreate.length === 0) {
+    return { error: 'Tidak ada mitra dengan saldo cukup' }
+  }
+
+  const { error: insertError } = await supabase.from('withdrawals').insert(withdrawalsToCreate)
+  if (insertError) return { error: insertError.message }
+
+  const totalAmount = withdrawalsToCreate.reduce((sum, w) => sum + w.amount, 0)
+  await logActivity({
+    business_id: businessId,
+    user_id: user.id,
+    action: 'group_withdrawal',
+    entity_type: 'withdrawal',
+    entity_id: businessId,
+    details: {
+      percentage: formData.percentage,
+      total_amount: totalAmount,
+      partner_count: withdrawalsToCreate.length,
+      description: 'Penarikan bersama ' + formData.percentage + '% untuk ' + withdrawalsToCreate.length + ' mitra',
+    },
+  })
+
+  revalidatePath(`/bisnis/${businessId}/modal`)
+  revalidatePath(`/bisnis/${businessId}`)
+  return { success: true, count: withdrawalsToCreate.length, totalAmount }
+}
 export async function deleteWithdrawal(withdrawalId: string, businessId: string) {
   const supabase = await createClient()
 
