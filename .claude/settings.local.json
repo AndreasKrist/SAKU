@@ -34,7 +34,8 @@
       "Bash(tree:*)",
       "Bash(findstr:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git -C \"D:\\\\Pictures\\\\SAKU\" log --oneline -1)"
     ]
   }
 }
