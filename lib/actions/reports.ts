@@ -45,7 +45,8 @@ export async function generateProfitLossReport(
 export async function generateCashFlowReport(
   businessId: string,
   periodStart: string,
-  periodEnd: string
+  periodEnd: string,
+  options?: { showAllExpenses?: boolean }
 ) {
   const supabase = await createClient()
 
@@ -70,7 +71,7 @@ export async function generateCashFlowReport(
   }
 
   try {
-    const report = await calculateCashFlow(businessId, periodStart, periodEnd)
+    const report = await calculateCashFlow(businessId, periodStart, periodEnd, options)
     return { success: true, report }
   } catch (error: any) {
     return { error: error.message }

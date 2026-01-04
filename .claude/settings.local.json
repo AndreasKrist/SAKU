@@ -30,7 +30,9 @@
       "Bash(powershell -Command \"\\(Get-Content ''components/reports/CapitalAccountsReport.tsx''\\) -replace ''Total Modal Bisnis'', ''Total Ekuitas Bisnis'' -replace ''Saldo Modal'', ''Saldo Ekuitas'' -replace ''Total Modal'', ''Total Ekuitas'' -replace ''Laporan Modal Mitra'', ''Laporan Ekuitas Mitra'' -replace ''Rincian Modal Per Mitra'', ''Rincian Ekuitas Per Mitra'' | Set-Content ''components/reports/CapitalAccountsReport.tsx''\")",
       "Bash(powershell -Command:*)",
       "Bash(grep:*)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "Bash(tree:*)",
+      "Bash(findstr:*)"
     ]
   }
 }

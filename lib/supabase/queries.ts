@@ -315,23 +315,31 @@ export async function calculateProfitLoss(
 export async function calculateCashFlow(
   businessId: string,
   periodStart: string,
-  periodEnd: string
+  periodEnd: string,
+  options?: { showAllExpenses?: boolean }
 ) {
   const supabase = await createClient()
+  const showAllExpenses = options?.showAllExpenses ?? false
 
-  // Get transactions paid by business only (excludes partner-paid expenses)
-  const { data: transactions, error } = await supabase
+  // Build query for transactions in period
+  let query = supabase
     .from('transactions')
     .select('*')
     .eq('business_id', businessId)
-    .eq('payment_source', 'business')
     .gte('transaction_date', periodStart)
     .lte('transaction_date', periodEnd)
     .order('transaction_date', { ascending: true })
 
+  // If not showing all, filter to business-only payments
+  if (!showAllExpenses) {
+    query = query.eq('payment_source', 'business')
+  }
+
+  const { data: transactions, error } = await query
+
   if (error) throw error
 
-  // Calculate opening balance (all business transactions before period start)
+  // Calculate opening balance (always from business cash only - this is actual cash position)
   const { data: previousTransactions, error: prevError } = await supabase
     .from('transactions')
     .select('type, amount')
@@ -350,15 +358,25 @@ export async function calculateCashFlow(
   // Calculate period cash flow
   let cashIn = 0
   let cashOut = 0
+  let cashOutBusiness = 0
+  let cashOutPartner = 0
 
-  transactions.forEach((t) => {
+  transactions?.forEach((t) => {
     const amount = Number(t.amount)
     if (t.type === 'revenue') {
       cashIn += amount
     } else {
       cashOut += amount
+      if (t.payment_source === 'business') {
+        cashOutBusiness += amount
+      } else {
+        cashOutPartner += amount
+      }
     }
   })
+
+  // Closing balance only considers actual business cash movements
+  const closingBalance = openingBalance + cashIn - cashOutBusiness
 
   return {
     period_start: periodStart,
@@ -366,9 +384,12 @@ export async function calculateCashFlow(
     opening_balance: openingBalance,
     cash_in: cashIn,
     cash_out: cashOut,
-    closing_balance: openingBalance + cashIn - cashOut,
-    revenue_items: transactions.filter((t) => t.type === 'revenue'),
-    expense_items: transactions.filter((t) => t.type === 'expense'),
+    cash_out_business: cashOutBusiness,
+    cash_out_partner: cashOutPartner,
+    closing_balance: closingBalance,
+    revenue_items: transactions?.filter((t) => t.type === 'revenue') || [],
+    expense_items: transactions?.filter((t) => t.type === 'expense') || [],
+    show_all_expenses: showAllExpenses,
   }
 }
 

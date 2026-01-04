@@ -96,9 +96,12 @@ export interface CashFlowReport {
   opening_balance: number
   cash_in: number
   cash_out: number
+  cash_out_business: number
+  cash_out_partner: number
   closing_balance: number
   revenue_items: Transaction[]
   expense_items: Transaction[]
+  show_all_expenses: boolean
 }
 
 export interface CapitalAccountsReport {

@@ -109,6 +109,10 @@ export function TransactionForm({
               setTransactionType(value)
               setValue('type', value)
               setValue('category_id', '')
+              // Revenue always goes to business cash
+              if (value === 'revenue') {
+                setValue('payment_source', 'business')
+              }
             }}
             disabled={loading}
           >
@@ -177,41 +181,54 @@ export function TransactionForm({
         </div>
 
         {/* Payment Source - CRITICAL for auto capital contribution */}
-        <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="payment_source">
-            Sumber Pembayaran *
-            {selectedType === 'expense' && selectedPaymentSource !== 'business' && (
-              <span className="text-xs text-blue-600 ml-2">
-                (Otomatis mencatat kontribusi modal)
-              </span>
+        {/* For revenue: always business (hidden). For expense: show options */}
+        {selectedType === 'expense' ? (
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="payment_source">
+              Sumber Pembayaran *
+              {selectedPaymentSource !== 'business' && (
+                <span className="text-xs text-blue-600 ml-2">
+                  (Otomatis mencatat kontribusi modal)
+                </span>
+              )}
+            </Label>
+            <Select
+              value={selectedPaymentSource}
+              onValueChange={(value) => setValue('payment_source', value)}
+              disabled={loading}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="business">Kas Bisnis</SelectItem>
+                {members.map((member) => (
+                  <SelectItem key={member.user_id} value={member.user_id}>
+                    {member.profile?.full_name || 'Unknown User'} (Pribadi)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.payment_source && (
+              <p className="text-sm text-red-600">{errors.payment_source.message}</p>
             )}
-          </Label>
-          <Select
-            value={selectedPaymentSource}
-            onValueChange={(value) => setValue('payment_source', value)}
-            disabled={loading}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="business">Kas Bisnis</SelectItem>
-              {members.map((member) => (
-                <SelectItem key={member.user_id} value={member.user_id}>
-                  {member.profile?.full_name || 'Unknown User'} (Pribadi)
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.payment_source && (
-            <p className="text-sm text-red-600">{errors.payment_source.message}</p>
-          )}
-          {selectedType === 'expense' && selectedPaymentSource !== 'business' && (
-            <p className="text-xs text-blue-600">
-              Pengeluaran yang dibayar mitra akan otomatis dicatat sebagai kontribusi modal
+            {selectedPaymentSource !== 'business' && (
+              <p className="text-xs text-blue-600">
+                Pengeluaran yang dibayar mitra akan otomatis dicatat sebagai kontribusi modal
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-2 md:col-span-2">
+            <Label>Tujuan Pembayaran</Label>
+            <div className="flex items-center h-10 px-3 rounded-md border bg-muted">
+              <span className="text-sm text-muted-foreground">Kas Bisnis</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Pendapatan selalu masuk ke kas bisnis
             </p>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Item Name */}
         <div className="space-y-2">

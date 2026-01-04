@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { formatRupiah, formatDateForInput, formatDate } from '@/lib/utils'
-import { Download } from 'lucide-react'
+import { Download, Building2, User } from 'lucide-react'
 import type { CashFlowReport as CashFlowReportType } from '@/types'
 
 interface CashFlowReportProps {
@@ -19,6 +20,7 @@ interface CashFlowReportProps {
 export function CashFlowReport({ businessId }: CashFlowReportProps) {
   const [loading, setLoading] = useState(false)
   const [report, setReport] = useState<CashFlowReportType | null>(null)
+  const [showAllExpenses, setShowAllExpenses] = useState(false)
 
   // Default to current month
   const now = new Date()
@@ -35,7 +37,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
       const response = await fetch('/api/reports/cash-flow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessId, periodStart, periodEnd }),
+        body: JSON.stringify({ businessId, periodStart, periodEnd, showAllExpenses }),
       })
 
       if (!response.ok) {
@@ -55,7 +57,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
   useEffect(() => {
     generateReport()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [showAllExpenses])
 
   return (
     <div className="space-y-4">
@@ -92,6 +94,20 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
               </Button>
             </div>
           </div>
+          <div className="flex items-center justify-between pt-4 border-t mt-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="show-all">Tampilkan semua pengeluaran</Label>
+              <p className="text-xs text-muted-foreground">
+                Termasuk pengeluaran yang dibayar mitra dari uang pribadi
+              </p>
+            </div>
+            <Switch
+              id="show-all"
+              checked={showAllExpenses}
+              onCheckedChange={setShowAllExpenses}
+              disabled={loading}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -106,7 +122,10 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
                 {new Date(report.period_end).toLocaleDateString('id-ID')}
               </CardDescription>
               <p className="text-xs text-muted-foreground mt-1">
-                * Hanya transaksi yang dibayar dari kas bisnis
+                {report.show_all_expenses
+                  ? '* Menampilkan semua pengeluaran (kas bisnis + pribadi mitra)'
+                  : '* Hanya transaksi yang dibayar dari kas bisnis'
+                }
               </p>
             </div>
             <Button variant="outline" size="sm">
@@ -166,20 +185,51 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
                   report.expense_items.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm border-b pb-2">
                       <div className="flex-1">
-                        <p className="font-medium">{item.item_name || 'Pengeluaran'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{item.item_name || 'Pengeluaran'}</p>
+                          {report.show_all_expenses && (
+                            <Badge
+                              variant={item.payment_source === 'business' ? 'default' : 'secondary'}
+                              className="text-xs px-1.5 py-0"
+                            >
+                              {item.payment_source === 'business' ? (
+                                <><Building2 className="w-3 h-3 mr-1" />Kas</>
+                              ) : (
+                                <><User className="w-3 h-3 mr-1" />Pribadi</>
+                              )}
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           {formatDate(item.transaction_date)}
                         </p>
                       </div>
-                      <span className="font-medium text-red-600">
+                      <span className={`font-medium ${item.payment_source === 'business' ? 'text-red-600' : 'text-orange-500'}`}>
                         -{formatRupiah(Number(item.amount))}
                       </span>
                     </div>
                   ))
                 )}
                 <Separator className="my-2" />
+                {report.show_all_expenses && report.cash_out_partner > 0 && (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <span className="flex items-center gap-1">
+                        <Building2 className="w-4 h-4" /> Dari Kas Bisnis
+                      </span>
+                      <span className="text-red-600">{formatRupiah(report.cash_out_business)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="flex items-center gap-1">
+                        <User className="w-4 h-4" /> Dari Pribadi Mitra
+                      </span>
+                      <span className="text-orange-500">{formatRupiah(report.cash_out_partner)}</span>
+                    </div>
+                    <Separator className="my-2" />
+                  </>
+                )}
                 <div className="flex justify-between font-semibold">
-                  <span>Total Kas Keluar</span>
+                  <span>Total Pengeluaran</span>
                   <span className="text-red-600">{formatRupiah(report.cash_out)}</span>
                 </div>
               </div>
@@ -190,7 +240,14 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
             {/* Closing Balance */}
             <div className="bg-purple-50 p-4 rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold">Saldo Akhir</span>
+                <div>
+                  <span className="text-lg font-semibold">Saldo Akhir Kas Bisnis</span>
+                  {report.show_all_expenses && report.cash_out_partner > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      * Hanya memperhitungkan kas bisnis
+                    </p>
+                  )}
+                </div>
                 <span
                   className={`text-2xl font-bold ${report.closing_balance >= 0 ? 'text-purple-600' : 'text-red-600'}`}
                 >
@@ -208,9 +265,9 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
                 </p>
               </div>
               <div className="text-center p-3 bg-green-50 rounded">
-                <p className="text-xs text-muted-foreground mb-1">Kas Bersih</p>
-                <p className="font-semibold text-green-600">
-                  +{formatRupiah(report.cash_in - report.cash_out)}
+                <p className="text-xs text-muted-foreground mb-1">Arus Kas Bersih</p>
+                <p className={`font-semibold ${(report.cash_in - report.cash_out_business) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {(report.cash_in - report.cash_out_business) >= 0 ? '+' : ''}{formatRupiah(report.cash_in - report.cash_out_business)}
                 </p>
               </div>
               <div className="text-center p-3 bg-purple-50 rounded">

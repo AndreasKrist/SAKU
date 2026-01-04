@@ -4,7 +4,7 @@ import { generateCashFlowReport } from '@/lib/actions/reports'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { businessId, periodStart, periodEnd } = body
+    const { businessId, periodStart, periodEnd, showAllExpenses } = body
 
     if (!businessId || !periodStart || !periodEnd) {
       return NextResponse.json(
@@ -13,7 +13,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await generateCashFlowReport(businessId, periodStart, periodEnd)
+    const result = await generateCashFlowReport(
+      businessId,
+      periodStart,
+      periodEnd,
+      { showAllExpenses: showAllExpenses ?? false }
+    )
 
     if (result.error) {
       return NextResponse.json({ error: result.error }, { status: 400 })

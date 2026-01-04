@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -74,11 +75,20 @@ export function MobileNav({ businessId }: MobileNavProps) {
       <SheetContent side="left" className="w-64 p-0">
         <SheetHeader className="p-6 border-b">
           <SheetTitle>
-            <div>
-              <h2 className="text-2xl font-bold text-primary">SAKU</h2>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sistem Aplikasi Keuangan UMKM
-              </p>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/saku.webp"
+                alt="SAKU Logo"
+                width={40}
+                height={40}
+                className="rounded-lg"
+              />
+              <div>
+                <h2 className="text-xl font-bold text-primary">SAKU</h2>
+                <p className="text-xs text-muted-foreground">
+                  Keuangan UMKM
+                </p>
+              </div>
             </div>
           </SheetTitle>
         </SheetHeader>

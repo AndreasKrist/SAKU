@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
@@ -55,10 +56,21 @@ export function Sidebar({ businessId }: SidebarProps) {
   return (
     <aside className="hidden md:block w-64 bg-white border-r border-gray-200 min-h-screen">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-primary">SAKU</h1>
-        <p className="text-xs text-muted-foreground mt-1">
-          Sistem Aplikasi Keuangan UMKM
-        </p>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/saku.webp"
+            alt="SAKU Logo"
+            width={40}
+            height={40}
+            className="rounded-lg"
+          />
+          <div>
+            <h1 className="text-xl font-bold text-primary">SAKU</h1>
+            <p className="text-xs text-muted-foreground">
+              Keuangan UMKM
+            </p>
+          </div>
+        </div>
       </div>
 
       <nav className="px-3 space-y-1">

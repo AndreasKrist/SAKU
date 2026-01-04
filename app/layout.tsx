@@ -8,6 +8,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "SAKU - Sistem Aplikasi Keuangan UMKM",
   description: "Aplikasi manajemen keuangan untuk UMKM dengan banyak mitra",
+  icons: {
+    icon: "/saku.webp",
+    apple: "/saku.webp",
+  },
 };
 
 export default function RootLayout({
