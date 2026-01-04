@@ -32,7 +32,9 @@
       "Bash(grep:*)",
       "Bash(npx tsc --noEmit)",
       "Bash(tree:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
