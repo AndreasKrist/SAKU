@@ -67,6 +67,7 @@ export async function createBusiness(formData: {
     invite_link: inviteLink,
     start_date: formData.startDate,
     created_by: user.id,
+    auto_update_equity_on_contribution: true, // Default: ekuitas otomatis update saat ada kontribusi
   }
 
   console.log('[createBusiness] Attempting to insert:', businessData)

@@ -66,13 +66,14 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Ekuitas</CardTitle>
+            <CardTitle className="text-sm font-medium">Saldo Laba Tersedia</CardTitle>
             <Wallet className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">
               {formatRupiah(totalCapital)}
             </div>
+            <p className="text-xs text-muted-foreground mt-1">Bisa ditarik</p>
           </CardContent>
         </Card>
       </div>
@@ -97,7 +98,7 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-muted-foreground">Saldo Ekuitas</p>
+                    <p className="text-xs text-muted-foreground">Saldo Laba (Bisa Ditarik)</p>
                     <p className="text-2xl font-bold text-purple-600">
                       {formatRupiah(account.current_balance)}
                     </p>

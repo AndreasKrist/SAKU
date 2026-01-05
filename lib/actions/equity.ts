@@ -95,8 +95,14 @@ export async function calculateEquityFromContributions(businessId: string) {
 
 /**
  * Apply equity distribution calculated from contributions
+ * @param businessId - The business ID
+ * @param options - Optional settings
+ * @param options.skipOwnerCheck - Skip owner verification (for auto-update)
  */
-export async function applyEquityFromContributions(businessId: string) {
+export async function applyEquityFromContributions(
+  businessId: string,
+  options?: { skipOwnerCheck?: boolean }
+) {
   const supabase = await createClient()
 
   const {
@@ -107,16 +113,18 @@ export async function applyEquityFromContributions(businessId: string) {
     return { error: 'Tidak terautentikasi' }
   }
 
-  // Verify user is owner
-  const { data: membership } = await supabase
-    .from('business_members')
-    .select('role')
-    .eq('business_id', businessId)
-    .eq('user_id', user.id)
-    .single()
+  // Verify user is owner (unless auto-update mode)
+  if (!options?.skipOwnerCheck) {
+    const { data: membership } = await supabase
+      .from('business_members')
+      .select('role')
+      .eq('business_id', businessId)
+      .eq('user_id', user.id)
+      .single()
 
-  if (!membership || membership.role !== 'owner') {
-    return { error: 'Hanya pemilik yang dapat mengubah distribusi ekuitas' }
+    if (!membership || membership.role !== 'owner') {
+      return { error: 'Hanya pemilik yang dapat mengubah distribusi ekuitas' }
+    }
   }
 
   // Calculate equity from contributions

@@ -223,25 +223,43 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
                 <p className="text-sm text-blue-700 mt-1">
                   Sistem akan menghitung ekuitas berdasarkan proporsi kontribusi modal setiap mitra. Jika belum ada kontribusi, dibagi rata otomatis.
                 </p>
+                {autoUpdateEnabled && (
+                  <p className="text-xs text-green-700 mt-2 font-medium bg-green-100 px-2 py-1 rounded inline-block">
+                    ✅ Mode Otomatis: Saat ada kontribusi modal baru atau dihapus, ekuitas semua anggota akan langsung dihitung ulang berdasarkan proporsi kontribusi. Tidak perlu lagi klik "Terapkan" manual!
+                  </p>
+                )}
               </div>
               <div className="flex gap-2 w-full sm:w-auto">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleAutoCalculate}
-                  disabled={loading || saving}
-                  className="flex-1 sm:flex-initial"
-                >
-                  Preview
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleAutoApply}
-                  disabled={loading || saving}
-                  className="flex-1 sm:flex-initial bg-blue-600 hover:bg-blue-700"
-                >
-                  Terapkan
-                </Button>
+                {autoUpdateEnabled ? (
+                  <Button
+                    type="button"
+                    onClick={handleAutoApply}
+                    disabled={loading || saving}
+                    className="flex-1 sm:flex-initial bg-blue-600 hover:bg-blue-700"
+                  >
+                    Sync Sekarang
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleAutoCalculate}
+                      disabled={loading || saving}
+                      className="flex-1 sm:flex-initial"
+                    >
+                      Preview
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleAutoApply}
+                      disabled={loading || saving}
+                      className="flex-1 sm:flex-initial bg-blue-600 hover:bg-blue-700"
+                    >
+                      Terapkan
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
 

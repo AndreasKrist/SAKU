@@ -94,52 +94,57 @@ export function WithdrawalForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Equity Summary */}
       <div className="grid gap-4 md:grid-cols-2">
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <Wallet className="h-4 w-4 text-green-600" />
+            <p className="text-sm text-muted-foreground">Kepemilikan (Ekuitas)</p>
+          </div>
+          <p className="text-2xl font-bold text-green-600">
+            {equityPercentage}%
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Kontribusi: {formatRupiah(totalContributions)}
+          </p>
+        </div>
+
         <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
-            <Wallet className="h-4 w-4 text-purple-600" />
-            <p className="text-sm text-muted-foreground">Saldo Ekuitas Anda</p>
+            <TrendingUp className="h-4 w-4 text-purple-600" />
+            <p className="text-sm text-muted-foreground">Saldo Laba (Bisa Ditarik)</p>
           </div>
           <p className="text-2xl font-bold text-purple-600">
             {formatRupiah(currentBalance)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Ekuitas: {equityPercentage}%
-          </p>
-        </div>
-
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-            <p className="text-sm text-muted-foreground">Bagian Laba Anda</p>
-          </div>
-          <p className="text-2xl font-bold text-blue-600">
-            {formatRupiah(totalProfitShare)}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Dari total profit bisnis
+            Hanya laba yang bisa ditarik
           </p>
         </div>
       </div>
 
       {/* Breakdown */}
       <div className="p-4 bg-gray-50 rounded-lg text-sm">
-        <p className="font-medium mb-2">Rincian Ekuitas:</p>
+        <p className="font-medium mb-2">💡 Cara Kerja Penarikan:</p>
+        <div className="space-y-2 text-xs text-muted-foreground mb-3">
+          <p>• <strong>Kontribusi modal = saham</strong> (tidak bisa ditarik, ini kepemilikan)</p>
+          <p>• <strong>Laba saja yang bisa ditarik</strong> dari rekening/kas bisnis</p>
+          <p>• Kontribusi Anda: {formatRupiah(totalContributions)} → Ekuitas {equityPercentage}%</p>
+        </div>
+
+        <Separator className="my-3" />
+
+        <p className="font-medium mb-2">Perhitungan Saldo:</p>
         <div className="space-y-1">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Kontribusi Modal</span>
-            <span className="text-green-600">+{formatRupiah(totalContributions)}</span>
-          </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Bagian Laba ({equityPercentage}%)</span>
             <span className="text-blue-600">+{formatRupiah(totalProfitShare)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Total Penarikan</span>
+            <span className="text-muted-foreground">Sudah Ditarik</span>
             <span className="text-red-600">-{formatRupiah(totalWithdrawals)}</span>
           </div>
           <Separator className="my-2" />
           <div className="flex justify-between font-semibold">
-            <span>Saldo Ekuitas</span>
+            <span>Saldo Laba Tersedia</span>
             <span className="text-purple-600">{formatRupiah(currentBalance)}</span>
           </div>
         </div>

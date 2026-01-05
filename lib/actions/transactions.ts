@@ -31,6 +31,18 @@ export async function createTransaction(
     return { error: 'Anda bukan anggota bisnis ini' }
   }
 
+  // Validate business cash if expense is paid from business
+  if (formData.type === 'expense' && formData.payment_source === 'business') {
+    const { getBusinessCash } = await import('@/lib/supabase/queries')
+    const businessCash = await getBusinessCash(businessId)
+
+    if (formData.amount > businessCash) {
+      return {
+        error: `Kas bisnis tidak mencukupi. Kas tersedia: Rp ${businessCash.toLocaleString('id-ID')}. Gunakan "Dibayar oleh mitra" jika ingin bayar pakai uang pribadi.`,
+      }
+    }
+  }
+
   // Create transaction
   const { data: transaction, error: transactionError } = await supabase
     .from('transactions')
@@ -59,6 +71,7 @@ export async function createTransaction(
   }
 
   // CRITICAL: If expense paid by partner (not business), auto-create capital contribution
+  // This increases their equity percentage automatically
   if (
     formData.type === 'expense' &&
     formData.payment_source !== 'business' &&
@@ -70,9 +83,8 @@ export async function createTransaction(
         business_id: businessId,
         user_id: formData.payment_source,
         amount: formData.amount,
-        type: 'from_expense',
-        source_transaction_id: transaction.id,
-        notes: `Auto: Pembayaran untuk ${formData.item_name || 'transaksi'}`,
+        type: 'additional',
+        notes: `Otomatis dari pengeluaran: ${formData.item_name || 'transaksi'} (dibayar uang pribadi)`,
         contribution_date: formData.transaction_date,
         created_by: user.id,
       })
@@ -94,6 +106,29 @@ export async function createTransaction(
           description: `Kontribusi modal otomatis dari pembayaran pengeluaran`,
         },
       })
+
+      // Auto-update equity by default (can be disabled in settings)
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('auto_update_equity_on_contribution')
+        .eq('id', businessId)
+        .single()
+
+      // Default to TRUE if field doesn't exist or is null
+      const shouldAutoUpdate = business?.auto_update_equity_on_contribution !== false
+
+      if (shouldAutoUpdate) {
+        const { applyEquityFromContributions } = await import('./equity')
+        const equityResult = await applyEquityFromContributions(businessId, {
+          skipOwnerCheck: true, // Allow any member to trigger auto-update
+        })
+
+        if (!equityResult.error) {
+          console.log('[Auto-Update] Equity updated after personal expense contribution')
+        } else {
+          console.error('[Auto-Update] Failed to update equity:', equityResult.error)
+        }
+      }
     }
   }
 

@@ -27,11 +27,6 @@ export default async function DashboardPage() {
     redirect('/onboarding')
   }
 
-  // If only one business, redirect to it
-  if (businesses.length === 1) {
-    redirect(`/bisnis/${businesses[0].business_id}`)
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar user={user as any} businesses={businesses} />

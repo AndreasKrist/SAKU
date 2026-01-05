@@ -221,6 +221,9 @@ export const getPartnerCapitalAccounts = cache(
         .filter((w) => w.user_id === member.user_id)
         .reduce((sum, w) => sum + Number(w.amount), 0)
 
+      // Current balance = ONLY profit that can be withdrawn (contributions are permanent equity)
+      const withdrawableBalance = totalProfitAllocated - totalWithdrawals
+
       return {
         user_id: member.user_id,
         user_name: member.profile?.full_name || 'Unknown User',
@@ -228,8 +231,7 @@ export const getPartnerCapitalAccounts = cache(
         total_contributions: totalContributions,
         total_profit_allocated: totalProfitAllocated,
         total_withdrawals: totalWithdrawals,
-        current_balance:
-          totalContributions + totalProfitAllocated - totalWithdrawals,
+        current_balance: withdrawableBalance,
       }
     })
   }
@@ -391,6 +393,61 @@ export async function calculateCashFlow(
     expense_items: transactions?.filter((t) => t.type === 'expense') || [],
     show_all_expenses: showAllExpenses,
   }
+}
+
+// =====================================================
+// BUSINESS CASH CALCULATION
+// =====================================================
+
+/**
+ * Calculate current business cash balance
+ * Formula: Contributions + Revenue - Expense(business) - Withdrawals
+ */
+export async function getBusinessCash(businessId: string): Promise<number> {
+  const supabase = await createClient()
+
+  // Get all capital contributions
+  const { data: contributions } = await supabase
+    .from('capital_contributions')
+    .select('amount')
+    .eq('business_id', businessId)
+
+  const totalContributions =
+    contributions?.reduce((sum, c) => sum + Number(c.amount), 0) || 0
+
+  // Get all transactions
+  const { data: transactions } = await supabase
+    .from('transactions')
+    .select('type, amount, payment_source')
+    .eq('business_id', businessId)
+
+  let totalRevenue = 0
+  let totalExpenseFromBusiness = 0
+
+  transactions?.forEach((t) => {
+    const amount = Number(t.amount)
+    if (t.type === 'revenue') {
+      totalRevenue += amount
+    } else if (t.type === 'expense' && t.payment_source === 'business') {
+      totalExpenseFromBusiness += amount
+    }
+    // Expenses paid by partners don't reduce business cash
+  })
+
+  // Get all withdrawals (withdrawals reduce business cash)
+  const { data: withdrawals } = await supabase
+    .from('withdrawals')
+    .select('amount')
+    .eq('business_id', businessId)
+
+  const totalWithdrawals =
+    withdrawals?.reduce((sum, w) => sum + Number(w.amount), 0) || 0
+
+  // Business cash = contributions + revenue - expense(business only) - withdrawals
+  const businessCash =
+    totalContributions + totalRevenue - totalExpenseFromBusiness - totalWithdrawals
+
+  return businessCash
 }
 
 // =====================================================

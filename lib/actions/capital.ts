@@ -65,20 +65,27 @@ export async function createCapitalContribution(
     },
   })
 
-  // Check if auto-update equity is enabled
+  // Auto-update equity by default (can be disabled in settings)
   const { data: business } = await supabase
     .from('businesses')
     .select('auto_update_equity_on_contribution')
     .eq('id', businessId)
     .single()
 
-  if (business?.auto_update_equity_on_contribution) {
+  // Default to TRUE if field doesn't exist or is null
+  const shouldAutoUpdate = business?.auto_update_equity_on_contribution !== false
+
+  if (shouldAutoUpdate) {
     // Auto-update equity based on new contributions
     const { applyEquityFromContributions } = await import('./equity')
-    const equityResult = await applyEquityFromContributions(businessId)
+    const equityResult = await applyEquityFromContributions(businessId, {
+      skipOwnerCheck: true, // Allow any member to trigger auto-update
+    })
 
     if (!equityResult.error) {
       console.log('[Auto-Update] Equity updated after contribution')
+    } else {
+      console.error('[Auto-Update] Failed to update equity:', equityResult.error)
     }
   }
 
@@ -113,38 +120,62 @@ export async function createWithdrawal(
     return { error: 'Anda bukan anggota bisnis ini' }
   }
 
-  // Get user's capital account balance
-  const { data: contributions } = await supabase
-    .from('capital_contributions')
-    .select('amount')
+  // Calculate user's profit balance from transactions (same as UI)
+  // Get all transactions to calculate total profit
+  const { data: transactions } = await supabase
+    .from('transactions')
+    .select('type, amount')
+    .eq('business_id', businessId)
+
+  let totalRevenue = 0
+  let totalExpense = 0
+  transactions?.forEach((t) => {
+    const amount = Number(t.amount)
+    if (t.type === 'revenue') {
+      totalRevenue += amount
+    } else {
+      totalExpense += amount
+    }
+  })
+  const totalBusinessProfit = totalRevenue - totalExpense
+
+  // Get user's equity percentage
+  const { data: memberData } = await supabase
+    .from('business_members')
+    .select('equity_percentage')
     .eq('business_id', businessId)
     .eq('user_id', user.id)
+    .single()
 
-  const { data: allocations } = await supabase
-    .from('profit_allocations')
-    .select('allocated_amount, distribution:profit_distributions!inner(business_id)')
-    .eq('user_id', user.id)
-    .eq('distribution.business_id', businessId)
+  const equityPercentage = Number(memberData?.equity_percentage || 0)
+  const userProfitShare = totalBusinessProfit * (equityPercentage / 100)
 
+  // Get existing withdrawals
   const { data: withdrawals } = await supabase
     .from('withdrawals')
     .select('amount')
     .eq('business_id', businessId)
     .eq('user_id', user.id)
 
-  const totalContributions =
-    contributions?.reduce((sum, c) => sum + Number(c.amount), 0) || 0
-  const totalAllocations =
-    allocations?.reduce((sum, a) => sum + Number(a.allocated_amount), 0) || 0
   const totalWithdrawals =
     withdrawals?.reduce((sum, w) => sum + Number(w.amount), 0) || 0
 
-  const currentBalance =
-    totalContributions + totalAllocations - totalWithdrawals
+  // Only profit can be withdrawn (contributions are permanent equity)
+  const withdrawableBalance = userProfitShare - totalWithdrawals
 
-  if (formData.amount > currentBalance) {
+  if (formData.amount > withdrawableBalance) {
     return {
-      error: `Saldo tidak mencukupi. Saldo saat ini: Rp ${currentBalance.toLocaleString('id-ID')}`,
+      error: `Saldo laba tidak mencukupi. Saldo yang dapat ditarik: Rp ${withdrawableBalance.toLocaleString('id-ID')}`,
+    }
+  }
+
+  // Validate business cash is sufficient
+  const { getBusinessCash } = await import('@/lib/supabase/queries')
+  const businessCash = await getBusinessCash(businessId)
+
+  if (formData.amount > businessCash) {
+    return {
+      error: `Kas bisnis tidak mencukupi untuk penarikan ini. Kas tersedia: Rp ${businessCash.toLocaleString('id-ID')}. Saldo laba Anda: Rp ${withdrawableBalance.toLocaleString('id-ID')}.`,
     }
   }
 
@@ -234,20 +265,27 @@ export async function deleteCapitalContribution(
     },
   })
 
-  // Check if auto-update equity is enabled
+  // Auto-update equity by default (can be disabled in settings)
   const { data: business } = await supabase
     .from('businesses')
     .select('auto_update_equity_on_contribution')
     .eq('id', businessId)
     .single()
 
-  if (business?.auto_update_equity_on_contribution) {
+  // Default to TRUE if field doesn't exist or is null
+  const shouldAutoUpdate = business?.auto_update_equity_on_contribution !== false
+
+  if (shouldAutoUpdate) {
     // Auto-update equity after deletion
     const { applyEquityFromContributions } = await import('./equity')
-    const equityResult = await applyEquityFromContributions(businessId)
+    const equityResult = await applyEquityFromContributions(businessId, {
+      skipOwnerCheck: true, // Allow any member to trigger auto-update
+    })
 
     if (!equityResult.error) {
       console.log('[Auto-Update] Equity updated after contribution deletion')
+    } else {
+      console.error('[Auto-Update] Failed to update equity:', equityResult.error)
     }
   }
 
@@ -294,12 +332,6 @@ export async function createGroupWithdrawal(
     return { error: 'Tidak ada mitra ditemukan' }
   }
 
-  // Get contributions
-  const { data: contributions } = await supabase
-    .from('capital_contributions')
-    .select('user_id, amount')
-    .eq('business_id', businessId)
-
   // Get transactions for profit calculation
   const { data: transactions } = await supabase
     .from('transactions')
@@ -331,11 +363,11 @@ export async function createGroupWithdrawal(
   }> = []
 
   for (const m of members) {
-    const userContribs = contributions?.filter((c) => c.user_id === m.user_id).reduce((sum, c) => sum + Number(c.amount), 0) || 0
+    // Only profit can be withdrawn (contributions are permanent equity)
     const profitShare = totalProfit * (Number(m.equity_percentage) / 100)
     const userWithdraws = withdrawals?.filter((w) => w.user_id === m.user_id).reduce((sum, w) => sum + Number(w.amount), 0) || 0
-    const balance = userContribs + profitShare - userWithdraws
-    const amount = Math.floor(balance * (formData.percentage / 100))
+    const withdrawableBalance = profitShare - userWithdraws
+    const amount = Math.floor(withdrawableBalance * (formData.percentage / 100))
 
     if (amount > 0) {
       withdrawalsToCreate.push({
@@ -351,6 +383,17 @@ export async function createGroupWithdrawal(
 
   if (withdrawalsToCreate.length === 0) {
     return { error: 'Tidak ada mitra dengan saldo cukup' }
+  }
+
+  // Validate business cash is sufficient for total withdrawal
+  const totalWithdrawalAmount = withdrawalsToCreate.reduce((sum, w) => sum + w.amount, 0)
+  const { getBusinessCash } = await import('@/lib/supabase/queries')
+  const businessCash = await getBusinessCash(businessId)
+
+  if (totalWithdrawalAmount > businessCash) {
+    return {
+      error: `Kas bisnis tidak mencukupi untuk penarikan bersama ini. Kas tersedia: Rp ${businessCash.toLocaleString('id-ID')}. Total penarikan: Rp ${totalWithdrawalAmount.toLocaleString('id-ID')}.`,
+    }
   }
 
   const { error: insertError } = await supabase.from('withdrawals').insert(withdrawalsToCreate)

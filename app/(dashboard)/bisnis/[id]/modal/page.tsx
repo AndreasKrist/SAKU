@@ -5,6 +5,7 @@ import {
   getBusinessMembers,
   getPartnerCapitalAccounts,
   getCapitalContributions,
+  getBusinessCash,
 } from '@/lib/supabase/queries'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,6 +37,7 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
 
   const capitalAccounts = (await getPartnerCapitalAccounts(params.id)) as any[]
   const contributions = (await getCapitalContributions(params.id)) as any[]
+  const businessCash = await getBusinessCash(params.id)
 
   // Get withdrawals
   const supabase = await createClient()
@@ -75,6 +77,29 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
           Kelola kontribusi modal dan penarikan ekuitas
         </p>
       </div>
+
+      {/* Business Cash Banner */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Kas Bisnis</p>
+              <p className="text-4xl font-bold text-blue-600">{formatRupiah(businessCash)}</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Uang liquid yang tersedia untuk operasional dan penarikan
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <p className="text-xs text-muted-foreground mb-1">Formula</p>
+                <p className="text-xs font-mono">Kontribusi + Revenue</p>
+                <p className="text-xs font-mono">- Expense (kas bisnis)</p>
+                <p className="text-xs font-mono">- Penarikan</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Capital Summary */}
       <CapitalAccountSummary accounts={capitalAccounts} />
