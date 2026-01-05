@@ -223,18 +223,18 @@ export default function SignupPage() {
         <div className="mt-6 space-y-4">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-300" />
+              <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">atau</span>
+              <span className="bg-card px-2 text-muted-foreground">atau</span>
             </div>
           </div>
 
           <GoogleSignInButton />
 
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-muted-foreground">
             Sudah punya akun?{' '}
-            <Link href="/login" className="font-semibold text-blue-600 hover:underline">
+            <Link href="/login" className="font-semibold text-primary hover:underline">
               Masuk di sini
             </Link>
           </div>

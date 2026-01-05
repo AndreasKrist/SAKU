@@ -12,6 +12,7 @@ import {
   FileText,
   Activity,
   ChevronRight,
+  Banknote,
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ const menuItems = [
   { href: '/mitra', label: 'Mitra', icon: Users },
   { href: '/transaksi', label: 'Transaksi', icon: Receipt },
   { href: '/modal', label: 'Modal & Ekuitas', icon: Wallet },
+  { href: '/penarikan-laba', label: 'Penarikan Laba', icon: Banknote },
   { href: '/laporan', label: 'Laporan', icon: FileText },
   { href: '/aktivitas', label: 'Aktivitas', icon: Activity },
 ]
