@@ -7,9 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { formatRupiah } from '@/lib/utils'
-import { Calculator, Users } from 'lucide-react'
-import { calculateEquityFromContributions, applyEquityFromContributions, splitEquityEvenly } from '@/lib/actions/equity'
+import { Users } from 'lucide-react'
+import { splitEquityEvenly } from '@/lib/actions/equity'
 import { AutoUpdateEquityToggle } from '@/components/business/AutoUpdateEquityToggle'
 
 interface Member {
@@ -75,65 +74,6 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
       ...prev,
       [userId]: numValue,
     }))
-  }
-
-  async function handleAutoCalculate() {
-    setLoading(true)
-    try {
-      const result = await calculateEquityFromContributions(params.id)
-
-      if (result.error) {
-        toast.error(result.error)
-        return
-      }
-
-      if (!result.distributions) {
-        toast.error('Gagal menghitung distribusi ekuitas')
-        return
-      }
-
-      // Update distributions state with calculated values
-      const newDistributions: { [userId: string]: number } = {}
-      result.distributions.forEach((dist) => {
-        newDistributions[dist.userId] = dist.percentage
-      })
-      setDistributions(newDistributions)
-
-      // Show different message based on method
-      if (result.method === 'even_split') {
-        toast.success(
-          `Ekuitas dibagi rata karena belum ada kontribusi modal (${result.distributions.length} anggota)`
-        )
-      } else {
-        toast.success(
-          `Ekuitas dihitung berdasarkan kontribusi modal total ${formatRupiah(result.totalContributions || 0)}`
-        )
-      }
-    } catch (error: any) {
-      toast.error(error.message || 'Terjadi kesalahan')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleAutoApply() {
-    setSaving(true)
-    try {
-      const result = await applyEquityFromContributions(params.id)
-
-      if (result.error) {
-        toast.error(result.error)
-        return
-      }
-
-      toast.success('Ekuitas otomatis dihitung dan diterapkan!')
-      router.push(`/bisnis/${params.id}`)
-      router.refresh()
-    } catch (error: any) {
-      toast.error(error.message || 'Terjadi kesalahan')
-    } finally {
-      setSaving(false)
-    }
   }
 
   async function handleSplitEvenly() {
@@ -209,117 +149,60 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
         initialEnabled={autoUpdateEnabled}
       />
 
-      {/* Auto Calculate Card */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-4">
-            {/* Auto Calculate from Contributions */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="font-semibold text-blue-900 flex items-center gap-2">
-                  <Calculator className="h-5 w-5" />
-                  Hitung dari Kontribusi Modal
-                </h3>
-                <p className="text-sm text-blue-700 mt-1">
-                  Sistem akan menghitung ekuitas berdasarkan proporsi kontribusi modal setiap mitra. Jika belum ada kontribusi, dibagi rata otomatis.
-                </p>
-                {autoUpdateEnabled && (
-                  <p className="text-xs text-green-700 mt-2 font-medium bg-green-100 px-2 py-1 rounded inline-block">
-                    ✅ Mode Otomatis: Saat ada kontribusi modal baru atau dihapus, ekuitas semua anggota akan langsung dihitung ulang berdasarkan proporsi kontribusi. Tidak perlu lagi klik "Terapkan" manual!
-                  </p>
-                )}
-              </div>
-              <div className="flex gap-2 w-full sm:w-auto">
-                {autoUpdateEnabled ? (
-                  <Button
-                    type="button"
-                    onClick={handleAutoApply}
-                    disabled={loading || saving}
-                    className="flex-1 sm:flex-initial bg-blue-600 hover:bg-blue-700"
-                  >
-                    Sync Sekarang
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleAutoCalculate}
-                      disabled={loading || saving}
-                      className="flex-1 sm:flex-initial"
-                    >
-                      Preview
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleAutoApply}
-                      disabled={loading || saving}
-                      className="flex-1 sm:flex-initial bg-blue-600 hover:bg-blue-700"
-                    >
-                      Terapkan
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="border-t border-blue-300"></div>
-
-            {/* Split Evenly */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="font-semibold text-blue-900 flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Bagi Rata ke Semua Anggota
-                </h3>
-                <p className="text-sm text-blue-700 mt-1">
-                  Bagikan ekuitas secara merata tanpa melihat kontribusi modal.
-                </p>
-                <p className="text-xs text-blue-600 mt-1 font-medium">
-                  💡 {members.length} anggota = {(100 / members.length).toFixed(2)}% per orang
-                </p>
-              </div>
-              <Button
-                type="button"
-                onClick={handleSplitEvenly}
-                disabled={loading || saving}
-                className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
-              >
-                Bagi Rata Sekarang
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <Card>
         <CardHeader>
           <CardTitle>Atur Distribusi Ekuitas Manual</CardTitle>
           <CardDescription>
-            Atau tentukan persentase kepemilikan secara manual. Total harus tepat 100%.
+            Tentukan persentase kepemilikan untuk setiap mitra. Total harus tepat 100%.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Split Evenly Button */}
+            <div className="p-4 rounded-lg bg-stone-50 border-2 border-stone-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-stone-800 flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Bagi Rata ke Semua Anggota
+                  </h3>
+                  <p className="text-sm text-stone-600 mt-1">
+                    Bagikan ekuitas secara merata tanpa melihat kontribusi modal.
+                  </p>
+                  <p className="text-xs text-stone-600 mt-1 font-medium">
+                    💡 {members.length} anggota = {(100 / members.length).toFixed(2)}% per orang
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleSplitEvenly}
+                  disabled={loading || saving}
+                  className="w-full sm:w-auto bg-stone-700 hover:bg-stone-800 text-white"
+                >
+                  Bagi Rata Sekarang
+                </Button>
+              </div>
+            </div>
+
             {/* Total Display */}
             <div
               className={`p-4 rounded-lg ${
                 Math.abs(total - 100) < 0.01
-                  ? 'bg-green-50 border-2 border-green-500'
-                  : 'bg-red-50 border-2 border-red-500'
+                  ? 'bg-stone-50 border-2 border-stone-300'
+                  : 'bg-stone-50 border-2 border-stone-400'
               }`}
             >
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-1">Total Ekuitas</p>
                 <p
-                  className={`text-3xl font-bold ${
-                    Math.abs(total - 100) < 0.01 ? 'text-green-600' : 'text-red-600'
+                  className={`text-xl font-bold ${
+                    Math.abs(total - 100) < 0.01 ? 'text-stone-700' : 'text-stone-800'
                   }`}
                 >
                   {total.toFixed(2)}%
                 </p>
                 {Math.abs(total - 100) >= 0.01 && (
-                  <p className="text-sm text-red-600 mt-1">
+                  <p className="text-sm text-stone-600 mt-1">
                     {total < 100
                       ? `Kurang ${(100 - total).toFixed(2)}%`
                       : `Lebih ${(total - 100).toFixed(2)}%`}

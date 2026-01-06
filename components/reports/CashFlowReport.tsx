@@ -237,6 +237,67 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
 
             <Separator />
 
+            {/* Financing Activities */}
+            <div>
+              <h3 className="font-semibold text-lg mb-3 text-blue-600">Arus Kas Pendanaan</h3>
+              <div className="space-y-2">
+                {/* Contributions */}
+                {report.contribution_items.length > 0 && (
+                  <>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Kontribusi Modal:</p>
+                    {report.contribution_items.map((item) => (
+                      <div key={item.id} className="flex justify-between text-sm border-b pb-2 ml-4">
+                        <div className="flex-1">
+                          <p className="font-medium">Kontribusi dari mitra</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(item.contribution_date)} • {item.notes || 'Modal'}
+                          </p>
+                        </div>
+                        <span className="font-medium text-green-600">
+                          +{formatRupiah(Number(item.amount))}
+                        </span>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {/* Withdrawals */}
+                {report.withdrawal_items.length > 0 && (
+                  <>
+                    <p className="text-sm font-medium text-muted-foreground mb-2 mt-3">Penarikan Laba:</p>
+                    {report.withdrawal_items.map((item) => (
+                      <div key={item.id} className="flex justify-between text-sm border-b pb-2 ml-4">
+                        <div className="flex-1">
+                          <p className="font-medium">Penarikan laba</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDate(item.withdrawal_date)} • {item.notes || 'Penarikan'}
+                          </p>
+                        </div>
+                        <span className="font-medium text-red-600">
+                          -{formatRupiah(Number(item.amount))}
+                        </span>
+                      </div>
+                    ))}
+                  </>
+                )}
+
+                {report.contribution_items.length === 0 && report.withdrawal_items.length === 0 && (
+                  <p className="text-sm text-muted-foreground">Tidak ada aktivitas pendanaan</p>
+                )}
+
+                <Separator className="my-2" />
+                <div className="flex justify-between font-semibold">
+                  <span>Arus Kas Bersih dari Pendanaan</span>
+                  <span className={report.contributions_in - report.withdrawals_out >= 0 ? 'text-green-600' : 'text-red-600'}>
+                    {report.contributions_in - report.withdrawals_out >= 0 ? '+' : ''}
+                    {formatRupiah(report.contributions_in - report.withdrawals_out)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
             {/* Closing Balance */}
             <div className="bg-purple-50 p-4 rounded-lg">
               <div className="flex justify-between items-center">
@@ -257,7 +318,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
             </div>
 
             {/* Summary */}
-            <div className="grid grid-cols-3 gap-4 pt-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
               <div className="text-center p-3 bg-blue-50 rounded">
                 <p className="text-xs text-muted-foreground mb-1">Saldo Awal</p>
                 <p className="font-semibold text-blue-600">
@@ -265,9 +326,15 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
                 </p>
               </div>
               <div className="text-center p-3 bg-green-50 rounded">
-                <p className="text-xs text-muted-foreground mb-1">Arus Kas Bersih</p>
+                <p className="text-xs text-muted-foreground mb-1">Arus Kas Operasional</p>
                 <p className={`font-semibold ${(report.cash_in - report.cash_out_business) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {(report.cash_in - report.cash_out_business) >= 0 ? '+' : ''}{formatRupiah(report.cash_in - report.cash_out_business)}
+                </p>
+              </div>
+              <div className="text-center p-3 bg-blue-50 rounded">
+                <p className="text-xs text-muted-foreground mb-1">Arus Kas Pendanaan</p>
+                <p className={`font-semibold ${(report.contributions_in - report.withdrawals_out) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {(report.contributions_in - report.withdrawals_out) >= 0 ? '+' : ''}{formatRupiah(report.contributions_in - report.withdrawals_out)}
                 </p>
               </div>
               <div className="text-center p-3 bg-purple-50 rounded">

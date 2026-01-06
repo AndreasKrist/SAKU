@@ -102,6 +102,11 @@ export interface CashFlowReport {
   revenue_items: Transaction[]
   expense_items: Transaction[]
   show_all_expenses: boolean
+  // Financing activities
+  contributions_in: number
+  withdrawals_out: number
+  contribution_items: any[]
+  withdrawal_items: any[]
 }
 
 export interface CapitalAccountsReport {

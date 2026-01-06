@@ -99,12 +99,12 @@ export function GroupWithdrawalForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Info */}
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="p-4 bg-stone-50 border border-stone-200 rounded-lg">
         <div className="flex items-center gap-2 mb-2">
-          <Users className="h-5 w-5 text-blue-600" />
-          <p className="font-medium text-blue-800">Penarikan Bersama</p>
+          <Users className="h-5 w-5 text-stone-700" />
+          <p className="font-medium text-stone-800">Penarikan Bersama</p>
         </div>
-        <p className="text-sm text-blue-700">
+        <p className="text-sm text-stone-600">
           Tarik ekuitas untuk semua mitra sekaligus dengan persentase yang sama.
           Setiap mitra akan mendapat bagian sesuai saldo ekuitas masing-masing.
         </p>

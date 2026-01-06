@@ -351,11 +351,52 @@ export async function calculateCashFlow(
 
   if (prevError) throw prevError
 
+  // Get previous contributions and withdrawals (before period)
+  const { data: previousContributions } = await supabase
+    .from('capital_contributions')
+    .select('amount')
+    .eq('business_id', businessId)
+    .lt('contribution_date', periodStart)
+
+  const { data: previousWithdrawals } = await supabase
+    .from('withdrawals')
+    .select('amount')
+    .eq('business_id', businessId)
+    .lt('withdrawal_date', periodStart)
+
   let openingBalance = 0
   previousTransactions?.forEach((t) => {
     const amount = Number(t.amount)
     openingBalance += t.type === 'revenue' ? amount : -amount
   })
+
+  // Add contributions and withdrawals to opening balance
+  previousContributions?.forEach((c) => {
+    openingBalance += Number(c.amount)
+  })
+  previousWithdrawals?.forEach((w) => {
+    openingBalance -= Number(w.amount)
+  })
+
+  // Get contributions and withdrawals in period
+  const { data: contributions } = await supabase
+    .from('capital_contributions')
+    .select('*')
+    .eq('business_id', businessId)
+    .gte('contribution_date', periodStart)
+    .lte('contribution_date', periodEnd)
+    .order('contribution_date', { ascending: true })
+
+  const { data: withdrawals } = await supabase
+    .from('withdrawals')
+    .select('*')
+    .eq('business_id', businessId)
+    .gte('withdrawal_date', periodStart)
+    .lte('withdrawal_date', periodEnd)
+    .order('withdrawal_date', { ascending: true })
+
+  const contributionsIn = contributions?.reduce((sum, c) => sum + Number(c.amount), 0) || 0
+  const withdrawalsOut = withdrawals?.reduce((sum, w) => sum + Number(w.amount), 0) || 0
 
   // Calculate period cash flow
   let cashIn = 0
@@ -377,8 +418,8 @@ export async function calculateCashFlow(
     }
   })
 
-  // Closing balance only considers actual business cash movements
-  const closingBalance = openingBalance + cashIn - cashOutBusiness
+  // Closing balance = Opening + Operations + Financing
+  const closingBalance = openingBalance + cashIn - cashOutBusiness + contributionsIn - withdrawalsOut
 
   return {
     period_start: periodStart,
@@ -392,6 +433,11 @@ export async function calculateCashFlow(
     revenue_items: transactions?.filter((t) => t.type === 'revenue') || [],
     expense_items: transactions?.filter((t) => t.type === 'expense') || [],
     show_all_expenses: showAllExpenses,
+    // Financing activities
+    contributions_in: contributionsIn,
+    withdrawals_out: withdrawalsOut,
+    contribution_items: contributions || [],
+    withdrawal_items: withdrawals || [],
   }
 }
 

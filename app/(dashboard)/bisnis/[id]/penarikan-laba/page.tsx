@@ -131,7 +131,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-green-500/20 to-transparent rounded-bl-full"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Laba Dialokasikan
+              Total Laba Bersih
             </CardTitle>
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-green-100">
               <TrendingUp className="h-5 w-5 text-green-600" />
@@ -139,10 +139,10 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {formatRupiah(totalProfitAllocated)}
+              {formatRupiah(totalProfit)}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Laba yang sudah dibagikan ke mitra
+              Pendapatan dikurangi pengeluaran
             </p>
           </CardContent>
         </Card>
@@ -162,7 +162,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
               {formatRupiah(totalWithdrawals)}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Total penarikan modal & laba
+              Total penarikan laba
             </p>
           </CardContent>
         </Card>
@@ -182,7 +182,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
               {formatRupiah(availableProfit)}
             </div>
             <p className="text-xs text-purple-700 mt-2 font-medium">
-              Total modal mitra yang bisa ditarik
+              Total Laba mitra yang bisa ditarik
             </p>
           </CardContent>
         </Card>

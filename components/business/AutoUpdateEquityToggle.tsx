@@ -47,29 +47,29 @@ export function AutoUpdateEquityToggle({
   }
 
   return (
-    <Card className={enabled ? 'border-green-200 bg-green-50' : 'border-gray-200'}>
+    <Card className={enabled ? 'border-stone-300 bg-stone-50' : 'border-gray-200'}>
       <CardContent className="pt-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Zap className={`h-5 w-5 ${enabled ? 'text-green-600' : 'text-gray-400'}`} />
+              <Zap className={`h-5 w-5 ${enabled ? 'text-stone-700' : 'text-gray-400'}`} />
               <Label
                 htmlFor="auto-update-equity"
                 className={`text-base font-semibold cursor-pointer ${
-                  enabled ? 'text-green-900' : 'text-gray-900'
+                  enabled ? 'text-stone-800' : 'text-gray-900'
                 }`}
               >
                 Auto-Update Ekuitas
               </Label>
             </div>
-            <p className={`text-sm ${enabled ? 'text-green-700' : 'text-muted-foreground'}`}>
+            <p className={`text-sm ${enabled ? 'text-stone-700' : 'text-muted-foreground'}`}>
               {enabled
                 ? 'Aktif: Ekuitas otomatis update setiap ada kontribusi modal baru atau dihapus'
                 : 'Nonaktif: Anda perlu manual klik &quot;Terapkan&quot; untuk update ekuitas'}
             </p>
             <div
               className={`flex items-start gap-2 mt-3 p-3 rounded-lg ${
-                enabled ? 'bg-green-100' : 'bg-gray-100'
+                enabled ? 'bg-stone-100' : 'bg-gray-100'
               }`}
             >
               <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />

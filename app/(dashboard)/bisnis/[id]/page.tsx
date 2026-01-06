@@ -187,7 +187,7 @@ export default async function BusinessDashboardPage({
         <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-violet-500/20 to-transparent rounded-bl-full"></div>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Modal</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Laba Bisa Ditarik</CardTitle>
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-violet-100">
               <Wallet className="h-5 w-5 text-violet-600" />
             </div>
@@ -220,15 +220,15 @@ export default async function BusinessDashboardPage({
         </Link>
 
         <Link
-          href={`/bisnis/${params.id}/modal`}
+          href={`/bisnis/${params.id}/penarikan-laba`}
           className="group flex items-center gap-4 p-4 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
         >
           <div className="flex items-center justify-center w-12 h-12 bg-amber-100 rounded-xl">
             <Wallet className="h-6 w-6 text-amber-600" />
           </div>
           <div>
-            <p className="font-semibold text-foreground">Kelola Modal</p>
-            <p className="text-xs text-muted-foreground">Kontribusi & penarikan</p>
+            <p className="font-semibold text-foreground">Penarikan Laba</p>
+            <p className="text-xs text-muted-foreground">Kalkulator Distribusi Profit</p>
           </div>
         </Link>
 
@@ -372,7 +372,7 @@ export default async function BusinessDashboardPage({
                     <p className="font-semibold text-violet-600">
                       {formatRupiah(capitalAccount?.current_balance || 0)}
                     </p>
-                    <p className="text-xs text-muted-foreground">Saldo Modal</p>
+                    <p className="text-xs text-muted-foreground">Laba Bisa Ditarik</p>
                   </div>
                 </div>
               )
