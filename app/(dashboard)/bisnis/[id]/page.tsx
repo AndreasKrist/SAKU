@@ -82,18 +82,19 @@ export default async function BusinessDashboardPage({
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent truncate">
             {business.name}
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1 truncate">
             {business.description || 'Dashboard bisnis Anda'}
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/50 px-4 py-2 rounded-full">
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground bg-secondary/50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full self-start md:self-auto flex-shrink-0">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          {now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+          <span className="hidden sm:inline">{now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="sm:hidden">{now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
         </div>
       </div>
 
@@ -121,22 +122,22 @@ export default async function BusinessDashboardPage({
       )}
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/20 to-transparent rounded-bl-full"></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Pendapatan Bulan Ini
+          <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-emerald-500/20 to-transparent rounded-bl-full"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+              Pendapatan
             </CardTitle>
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-100">
-              <TrendingUp className="h-5 w-5 text-emerald-600" />
+            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-100">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-base sm:text-lg md:text-2xl font-bold text-emerald-600 truncate">
               {formatRupiah(totalRevenue)}
             </div>
-            <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+            <p className="text-xs text-muted-foreground mt-1 sm:mt-2 flex items-center gap-1">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
               {transactions.filter((t) => t.type === 'revenue').length} transaksi
             </p>
@@ -144,20 +145,20 @@ export default async function BusinessDashboardPage({
         </Card>
 
         <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-rose-500/20 to-transparent rounded-bl-full"></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Pengeluaran Bulan Ini
+          <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-rose-500/20 to-transparent rounded-bl-full"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+              Pengeluaran
             </CardTitle>
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-rose-100">
-              <TrendingDown className="h-5 w-5 text-rose-600" />
+            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-100">
+              <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-rose-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-rose-600">
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-base sm:text-lg md:text-2xl font-bold text-rose-600 truncate">
               {formatRupiah(totalExpense)}
             </div>
-            <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+            <p className="text-xs text-muted-foreground mt-1 sm:mt-2 flex items-center gap-1">
               <span className="inline-block w-2 h-2 rounded-full bg-rose-500"></span>
               {transactions.filter((t) => t.type === 'expense').length} transaksi
             </p>
@@ -165,38 +166,38 @@ export default async function BusinessDashboardPage({
         </Card>
 
         <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl ${netProfit >= 0 ? 'from-blue-500/20' : 'from-orange-500/20'} to-transparent rounded-bl-full`}></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Laba Bersih</CardTitle>
-            <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${netProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'}`}>
-              <TrendingUp className={`h-5 w-5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+          <div className={`absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl ${netProfit >= 0 ? 'from-blue-500/20' : 'from-orange-500/20'} to-transparent rounded-bl-full`}></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Laba Bersih</CardTitle>
+            <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${netProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'}`}>
+              <TrendingUp className={`h-4 w-4 sm:h-5 sm:w-5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-4 pt-0">
             <div
-              className={`text-2xl font-bold ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}
+              className={`text-base sm:text-lg md:text-2xl font-bold truncate ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}
             >
               {formatRupiah(netProfit)}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              {now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+            <p className="text-xs text-muted-foreground mt-1 sm:mt-2">
+              {now.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
             </p>
           </CardContent>
         </Card>
 
         <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-violet-500/20 to-transparent rounded-bl-full"></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Laba Bisa Ditarik</CardTitle>
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-violet-100">
-              <Wallet className="h-5 w-5 text-violet-600" />
+          <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-violet-500/20 to-transparent rounded-bl-full"></div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Laba Ditarik</CardTitle>
+            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-violet-100">
+              <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-violet-600">
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-base sm:text-lg md:text-2xl font-bold text-violet-600 truncate">
               {formatRupiah(totalCapital)}
             </div>
-            <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+            <p className="text-xs text-muted-foreground mt-1 sm:mt-2 flex items-center gap-1">
               <Users className="w-3 h-3" />
               {members.length} mitra
             </p>
@@ -205,68 +206,68 @@ export default async function BusinessDashboardPage({
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <Link
           href={`/bisnis/${params.id}/transaksi`}
-          className="group flex items-center gap-4 p-4 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+          className="group flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
         >
-          <div className="flex items-center justify-center w-12 h-12 bg-primary-foreground/20 rounded-xl">
-            <Plus className="h-6 w-6" />
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary-foreground/20 rounded-xl">
+            <Plus className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div>
-            <p className="font-semibold">Tambah Transaksi</p>
-            <p className="text-xs opacity-80">Catat pemasukan/pengeluaran</p>
+          <div className="text-center sm:text-left">
+            <p className="font-semibold text-xs sm:text-base">Transaksi</p>
+            <p className="text-xs opacity-80 hidden sm:block">Catat pemasukan/pengeluaran</p>
           </div>
         </Link>
 
         <Link
           href={`/bisnis/${params.id}/penarikan-laba`}
-          className="group flex items-center gap-4 p-4 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
+          className="group flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-card border border-border rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
         >
-          <div className="flex items-center justify-center w-12 h-12 bg-amber-100 rounded-xl">
-            <Wallet className="h-6 w-6 text-amber-600" />
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-xl">
+            <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
           </div>
-          <div>
-            <p className="font-semibold text-foreground">Penarikan Laba</p>
-            <p className="text-xs text-muted-foreground">Kalkulator Distribusi Profit</p>
+          <div className="text-center sm:text-left">
+            <p className="font-semibold text-foreground text-xs sm:text-base">Penarikan</p>
+            <p className="text-xs text-muted-foreground hidden sm:block">Distribusi Profit</p>
           </div>
         </Link>
 
         <Link
           href={`/bisnis/${params.id}/laporan`}
-          className="group flex items-center gap-4 p-4 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
+          className="group flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-card border border-border rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
         >
-          <div className="flex items-center justify-center w-12 h-12 bg-rose-100 rounded-xl">
-            <TrendingUp className="h-6 w-6 text-rose-600" />
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-rose-100 rounded-xl">
+            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-rose-600" />
           </div>
-          <div>
-            <p className="font-semibold text-foreground">Lihat Laporan</p>
-            <p className="text-xs text-muted-foreground">Laba rugi & arus kas</p>
+          <div className="text-center sm:text-left">
+            <p className="font-semibold text-foreground text-xs sm:text-base">Laporan</p>
+            <p className="text-xs text-muted-foreground hidden sm:block">Laba rugi & arus kas</p>
           </div>
         </Link>
 
         <Link
           href={`/bisnis/${params.id}/mitra`}
-          className="group flex items-center gap-4 p-4 bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
+          className="group flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-card border border-border rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 hover:scale-[1.02] transition-all duration-200"
         >
-          <div className="flex items-center justify-center w-12 h-12 bg-violet-100 rounded-xl">
-            <Users className="h-6 w-6 text-violet-600" />
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-violet-100 rounded-xl">
+            <Users className="h-5 w-5 sm:h-6 sm:w-6 text-violet-600" />
           </div>
-          <div>
-            <p className="font-semibold text-foreground">Kelola Mitra</p>
-            <p className="text-xs text-muted-foreground">Partner & ekuitas</p>
+          <div className="text-center sm:text-left">
+            <p className="font-semibold text-foreground text-xs sm:text-base">Mitra</p>
+            <p className="text-xs text-muted-foreground hidden sm:block">Partner & ekuitas</p>
           </div>
         </Link>
       </div>
 
       {/* Recent Transactions */}
       <Card className="border-0 shadow-md">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
           <div>
-            <CardTitle className="text-lg">Transaksi Terbaru</CardTitle>
-            <p className="text-sm text-muted-foreground">Aktivitas bulan ini</p>
+            <CardTitle className="text-base sm:text-lg">Transaksi Terbaru</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground">Aktivitas bulan ini</p>
           </div>
-          <Button asChild variant="outline" size="sm" className="rounded-full">
+          <Button asChild variant="outline" size="sm" className="rounded-full w-full sm:w-auto">
             <Link href={`/bisnis/${params.id}/transaksi`}>
               Lihat Semua
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -288,30 +289,30 @@ export default async function BusinessDashboardPage({
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {transactions.slice(0, 5).map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center gap-4 p-3 rounded-xl bg-accent/30 hover:bg-accent/50 transition-colors"
+                  className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-xl bg-accent/30 hover:bg-accent/50 transition-colors"
                 >
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${transaction.type === 'revenue' ? 'bg-emerald-100' : 'bg-rose-100'}`}>
+                  <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex-shrink-0 ${transaction.type === 'revenue' ? 'bg-emerald-100' : 'bg-rose-100'}`}>
                     {transaction.type === 'revenue' ? (
-                      <TrendingUp className="w-5 h-5 text-emerald-600" />
+                      <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
                     ) : (
-                      <TrendingDown className="w-5 h-5 text-rose-600" />
+                      <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">
+                    <p className="font-medium text-sm truncate">
                       {transaction.item_name || transaction.category?.name || 'Transaksi'}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatDate(transaction.transaction_date)}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex-shrink-0">
                     <p
-                      className={`font-semibold ${transaction.type === 'revenue' ? 'text-emerald-600' : 'text-rose-600'}`}
+                      className={`font-semibold text-xs sm:text-sm ${transaction.type === 'revenue' ? 'text-emerald-600' : 'text-rose-600'}`}
                     >
                       {transaction.type === 'revenue' ? '+' : '-'}
                       {formatRupiah(Number(transaction.amount))}
@@ -326,12 +327,12 @@ export default async function BusinessDashboardPage({
 
       {/* Members */}
       <Card className="border-0 shadow-md">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
           <div>
-            <CardTitle className="text-lg">Mitra Bisnis</CardTitle>
-            <p className="text-sm text-muted-foreground">{members.length} partner aktif</p>
+            <CardTitle className="text-base sm:text-lg">Mitra Bisnis</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground">{members.length} partner aktif</p>
           </div>
-          <Button asChild variant="outline" size="sm" className="rounded-full">
+          <Button asChild variant="outline" size="sm" className="rounded-full w-full sm:w-auto">
             <Link href={`/bisnis/${params.id}/mitra`}>
               Kelola
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -339,7 +340,7 @@ export default async function BusinessDashboardPage({
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {members.map((member, index) => {
               const capitalAccount = capitalAccounts.find(
                 (acc) => acc.user_id === member.user_id
@@ -350,29 +351,29 @@ export default async function BusinessDashboardPage({
               return (
                 <div
                   key={member.id}
-                  className="flex items-center gap-4 p-3 rounded-xl bg-accent/30 hover:bg-accent/50 transition-colors"
+                  className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-xl bg-accent/30 hover:bg-accent/50 transition-colors"
                 >
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${colorClass.split(' ')[0]}`}>
-                    <span className={`text-lg font-bold ${colorClass.split(' ')[1]}`}>
+                  <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex-shrink-0 ${colorClass.split(' ')[0]}`}>
+                    <span className={`text-sm sm:text-lg font-bold ${colorClass.split(' ')[1]}`}>
                       {(member.profile?.full_name || 'U').charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium truncate">{member.profile?.full_name || 'Unknown User'}</p>
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <p className="font-medium text-sm truncate">{member.profile?.full_name || 'Unknown User'}</p>
                       {member.role === 'owner' && (
-                        <Crown className="w-4 h-4 text-amber-500" />
+                        <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {Number(member.equity_percentage)}% Ekuitas
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-violet-600">
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-semibold text-violet-600 text-xs sm:text-sm">
                       {formatRupiah(capitalAccount?.current_balance || 0)}
                     </p>
-                    <p className="text-xs text-muted-foreground">Laba Bisa Ditarik</p>
+                    <p className="text-xs text-muted-foreground hidden sm:block">Laba Bisa Ditarik</p>
                   </div>
                 </div>
               )

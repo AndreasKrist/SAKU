@@ -96,177 +96,272 @@ export function TransactionList({
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-wrap gap-4">
-        <div className="flex-1 min-w-[200px]">
-          <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Filter jenis" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Jenis</SelectItem>
-              <SelectItem value="revenue">Pendapatan</SelectItem>
-              <SelectItem value="expense">Pengeluaran</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="grid grid-cols-2 gap-2 sm:gap-4">
+        <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter jenis" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Jenis</SelectItem>
+            <SelectItem value="revenue">Pendapatan</SelectItem>
+            <SelectItem value="expense">Pengeluaran</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <div className="flex-1 min-w-[200px]">
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Filter kategori" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Kategori</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <SelectTrigger>
+            <SelectValue placeholder="Filter kategori" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Kategori</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Pendapatan</p>
-          <p className="text-lg font-bold text-green-600">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
+        <div className="text-center flex sm:block items-center justify-between sm:justify-center">
+          <p className="text-xs sm:text-sm text-muted-foreground">Pendapatan</p>
+          <p className="text-base sm:text-lg font-bold text-green-600">
             {formatRupiah(totalRevenue)}
           </p>
         </div>
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Pengeluaran</p>
-          <p className="text-lg font-bold text-red-600">{formatRupiah(totalExpense)}</p>
+        <div className="text-center flex sm:block items-center justify-between sm:justify-center">
+          <p className="text-xs sm:text-sm text-muted-foreground">Pengeluaran</p>
+          <p className="text-base sm:text-lg font-bold text-red-600">{formatRupiah(totalExpense)}</p>
         </div>
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">Saldo</p>
+        <div className="text-center flex sm:block items-center justify-between sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0">
+          <p className="text-xs sm:text-sm text-muted-foreground">Saldo</p>
           <p
-            className={`text-lg font-bold ${totalRevenue - totalExpense >= 0 ? 'text-green-600' : 'text-red-600'}`}
+            className={`text-base sm:text-lg font-bold ${totalRevenue - totalExpense >= 0 ? 'text-green-600' : 'text-red-600'}`}
           >
             {formatRupiah(totalRevenue - totalExpense)}
           </p>
         </div>
       </div>
 
-      {/* Table */}
+      {/* Transaction List */}
       {filteredTransactions.length === 0 ? (
         <p className="text-center text-muted-foreground py-8">
           Tidak ada transaksi yang sesuai filter
         </p>
       ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Jenis</TableHead>
-                <TableHead>Item/Kategori</TableHead>
-                <TableHead>Sumber Bayar</TableHead>
-                <TableHead className="text-right">Jumlah</TableHead>
-                {userRole === 'owner' && <TableHead className="text-right">Aksi</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTransactions.map((transaction) => {
-                const paidByMember = members.find(
-                  (m) => m.user_id === transaction.paid_by_user_id
-                )
+        <>
+          {/* Mobile Card View */}
+          <div className="space-y-3 md:hidden">
+            {filteredTransactions.map((transaction) => {
+              const paidByMember = members.find(
+                (m) => m.user_id === transaction.paid_by_user_id
+              )
 
-                return (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">
-                      {formatDate(transaction.transaction_date)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          transaction.type === 'revenue' ? 'default' : 'destructive'
-                        }
-                      >
-                        {transaction.type === 'revenue' ? 'Pendapatan' : 'Pengeluaran'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {transaction.item_name || transaction.category?.name || '-'}
-                        </p>
-                        {transaction.quantity && (
-                          <p className="text-xs text-muted-foreground">
-                            {transaction.quantity} {transaction.quantity_unit || 'unit'}
-                          </p>
-                        )}
-                        {transaction.notes && (
-                          <p className="text-xs text-muted-foreground">
-                            {transaction.notes}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {transaction.payment_source === 'business' ? (
-                        <Badge variant="secondary">Kas Bisnis</Badge>
-                      ) : (
-                        <div>
-                          <Badge variant="outline">
-                            {paidByMember?.profile?.full_name || 'Mitra'}
-                          </Badge>
-                          {transaction.type === 'expense' && (
-                            <p className="text-xs text-blue-600 mt-1">
-                              + Kontribusi Modal
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <span
-                        className={`font-semibold ${transaction.type === 'revenue' ? 'text-green-600' : 'text-red-600'}`}
+              return (
+                <div
+                  key={transaction.id}
+                  className="border rounded-lg p-3 bg-card"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">
+                        {transaction.item_name || transaction.category?.name || 'Transaksi'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(transaction.transaction_date)}
+                      </p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p
+                        className={`font-bold text-sm ${transaction.type === 'revenue' ? 'text-green-600' : 'text-red-600'}`}
                       >
                         {transaction.type === 'revenue' ? '+' : '-'}
                         {formatRupiah(Number(transaction.amount))}
-                      </span>
-                    </TableCell>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge
+                        variant={transaction.type === 'revenue' ? 'default' : 'destructive'}
+                        className="text-xs"
+                      >
+                        {transaction.type === 'revenue' ? 'Masuk' : 'Keluar'}
+                      </Badge>
+                      {transaction.payment_source === 'business' ? (
+                        <Badge variant="secondary" className="text-xs">Kas</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs">
+                          {paidByMember?.profile?.full_name?.split(' ')[0] || 'Mitra'}
+                        </Badge>
+                      )}
+                    </div>
+
                     {userRole === 'owner' && (
-                      <TableCell className="text-right">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              disabled={deletingId === transaction.id}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            disabled={deletingId === transaction.id}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Hapus Transaksi?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tindakan ini tidak dapat dibatalkan. Transaksi akan
+                              dihapus permanen.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(transaction.id)}
+                              className="bg-red-600 hover:bg-red-700"
                             >
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Hapus Transaksi?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Tindakan ini tidak dapat dibatalkan. Transaksi akan
-                                dihapus permanen.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Batal</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(transaction.id)}
-                                className="bg-red-600 hover:bg-red-700"
-                              >
-                                Hapus
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
+                              Hapus
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                  </div>
+
+                  {(transaction.quantity || transaction.notes) && (
+                    <div className="mt-2 pt-2 border-t text-xs text-muted-foreground">
+                      {transaction.quantity && (
+                        <span>{transaction.quantity} {transaction.quantity_unit || 'unit'}</span>
+                      )}
+                      {transaction.quantity && transaction.notes && <span> • </span>}
+                      {transaction.notes && <span>{transaction.notes}</span>}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tanggal</TableHead>
+                  <TableHead>Jenis</TableHead>
+                  <TableHead>Item/Kategori</TableHead>
+                  <TableHead>Sumber Bayar</TableHead>
+                  <TableHead className="text-right">Jumlah</TableHead>
+                  {userRole === 'owner' && <TableHead className="text-right">Aksi</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredTransactions.map((transaction) => {
+                  const paidByMember = members.find(
+                    (m) => m.user_id === transaction.paid_by_user_id
+                  )
+
+                  return (
+                    <TableRow key={transaction.id}>
+                      <TableCell className="font-medium">
+                        {formatDate(transaction.transaction_date)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            transaction.type === 'revenue' ? 'default' : 'destructive'
+                          }
+                        >
+                          {transaction.type === 'revenue' ? 'Pendapatan' : 'Pengeluaran'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">
+                            {transaction.item_name || transaction.category?.name || '-'}
+                          </p>
+                          {transaction.quantity && (
+                            <p className="text-xs text-muted-foreground">
+                              {transaction.quantity} {transaction.quantity_unit || 'unit'}
+                            </p>
+                          )}
+                          {transaction.notes && (
+                            <p className="text-xs text-muted-foreground">
+                              {transaction.notes}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {transaction.payment_source === 'business' ? (
+                          <Badge variant="secondary">Kas Bisnis</Badge>
+                        ) : (
+                          <div>
+                            <Badge variant="outline">
+                              {paidByMember?.profile?.full_name || 'Mitra'}
+                            </Badge>
+                            {transaction.type === 'expense' && (
+                              <p className="text-xs text-blue-600 mt-1">
+                                + Kontribusi Modal
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span
+                          className={`font-semibold ${transaction.type === 'revenue' ? 'text-green-600' : 'text-red-600'}`}
+                        >
+                          {transaction.type === 'revenue' ? '+' : '-'}
+                          {formatRupiah(Number(transaction.amount))}
+                        </span>
+                      </TableCell>
+                      {userRole === 'owner' && (
+                        <TableCell className="text-right">
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled={deletingId === transaction.id}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-600" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Hapus Transaksi?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tindakan ini tidak dapat dibatalkan. Transaksi akan
+                                  dihapus permanen.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Batal</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(transaction.id)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Hapus
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       )}
     </div>
   )

@@ -42,15 +42,15 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Mitra Bisnis</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold">Mitra Bisnis</h1>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Kelola anggota dan distribusi ekuitas
           </p>
         </div>
         {userMember.role === 'owner' && (
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href={`/bisnis/${params.id}/setup-mitra`}>
               <Settings className="mr-2 h-4 w-4" />
               Atur Ekuitas
@@ -63,8 +63,8 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
       {needsEquitySetup && (
         <Card className="border-orange-200 bg-orange-50">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1">
                 <h3 className="font-semibold text-orange-900">
                   Distribusi Ekuitas Belum Diatur
                 </h3>
@@ -73,7 +73,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
                 </p>
               </div>
               {userMember.role === 'owner' && (
-                <Button asChild>
+                <Button asChild className="w-full sm:w-auto">
                   <Link href={`/bisnis/${params.id}/setup-mitra`}>Atur Sekarang</Link>
                 </Button>
               )}
@@ -94,8 +94,8 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
           <CardContent className="space-y-4">
             <div>
               <p className="text-sm font-medium mb-2">Kode Bisnis</p>
-              <div className="flex gap-2">
-                <code className="flex-1 px-4 py-2 bg-gray-100 rounded font-mono text-lg">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <code className="flex-1 px-3 sm:px-4 py-2 bg-gray-100 rounded font-mono text-base sm:text-lg overflow-x-auto">
                   {business.business_code}
                 </code>
                 <CopyButton text={business.business_code} />
@@ -103,8 +103,8 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
             </div>
             <div>
               <p className="text-sm font-medium mb-2">Link Undangan</p>
-              <div className="flex gap-2">
-                <code className="flex-1 px-4 py-2 bg-gray-100 rounded text-sm break-all">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <code className="flex-1 px-3 sm:px-4 py-2 bg-gray-100 rounded text-xs sm:text-sm break-all overflow-x-auto">
                   {business.invite_link}
                 </code>
                 <CopyButton text={business.invite_link || ''} />
@@ -171,28 +171,28 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
 
                       {/* Capital Summary */}
                       {capitalAccount && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                          <div>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 text-sm">
+                          <div className="bg-green-50 p-2 rounded">
                             <p className="text-xs text-muted-foreground">Kontribusi</p>
-                            <p className="font-semibold text-green-600">
+                            <p className="font-semibold text-green-600 text-xs sm:text-sm">
                               {formatRupiah(capitalAccount.total_contributions)}
                             </p>
                           </div>
-                          <div>
+                          <div className="bg-blue-50 p-2 rounded">
                             <p className="text-xs text-muted-foreground">Laba</p>
-                            <p className="font-semibold text-blue-600">
+                            <p className="font-semibold text-blue-600 text-xs sm:text-sm">
                               {formatRupiah(capitalAccount.total_profit_allocated)}
                             </p>
                           </div>
-                          <div>
+                          <div className="bg-red-50 p-2 rounded">
                             <p className="text-xs text-muted-foreground">Penarikan</p>
-                            <p className="font-semibold text-red-600">
+                            <p className="font-semibold text-red-600 text-xs sm:text-sm">
                               {formatRupiah(capitalAccount.total_withdrawals)}
                             </p>
                           </div>
-                          <div>
+                          <div className="bg-purple-50 p-2 rounded">
                             <p className="text-xs text-muted-foreground">Saldo</p>
-                            <p className="font-semibold text-purple-600">
+                            <p className="font-semibold text-purple-600 text-xs sm:text-sm">
                               {formatRupiah(capitalAccount.current_balance)}
                             </p>
                           </div>
@@ -213,34 +213,34 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
           <CardTitle>Ringkasan Modal</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Total Kontribusi</p>
-              <p className="text-2xl font-bold text-green-600">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="text-center p-3 sm:p-4 bg-green-50 rounded-lg">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Kontribusi</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">
                 {formatRupiah(
                   capitalAccounts.reduce((sum, acc) => sum + acc.total_contributions, 0)
                 )}
               </p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Total Laba</p>
-              <p className="text-2xl font-bold text-blue-600">
+            <div className="text-center p-3 sm:p-4 bg-blue-50 rounded-lg">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Laba</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">
                 {formatRupiah(
                   capitalAccounts.reduce((sum, acc) => sum + acc.total_profit_allocated, 0)
                 )}
               </p>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Total Penarikan</p>
-              <p className="text-2xl font-bold text-red-600">
+            <div className="text-center p-3 sm:p-4 bg-red-50 rounded-lg">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Penarikan</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-red-600">
                 {formatRupiah(
                   capitalAccounts.reduce((sum, acc) => sum + acc.total_withdrawals, 0)
                 )}
               </p>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Total Modal</p>
-              <p className="text-2xl font-bold text-purple-600">
+            <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-lg">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Modal</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-purple-600">
                 {formatRupiah(
                   capitalAccounts.reduce((sum, acc) => sum + acc.current_balance, 0)
                 )}

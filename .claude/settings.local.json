@@ -36,7 +36,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git -C \"D:\\\\Pictures\\\\SAKU\" log --oneline -1)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
+      "Bash(timeout:*)"
     ]
   }
 }

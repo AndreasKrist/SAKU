@@ -29,8 +29,8 @@ export default async function LaporanPage({ params }: { params: { id: string } }
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Laporan Keuangan</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold">Laporan Keuangan</h1>
+        <p className="text-sm md:text-base text-muted-foreground mt-1">
           Laporan laba rugi dan arus kas
         </p>
       </div>

@@ -93,13 +93,13 @@ export function WithdrawalForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Equity Summary */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+        <div className="p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
             <Wallet className="h-4 w-4 text-green-600" />
-            <p className="text-sm text-muted-foreground">Kepemilikan (Ekuitas)</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Kepemilikan (Ekuitas)</p>
           </div>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="text-xl sm:text-2xl font-bold text-green-600">
             {equityPercentage}%
           </p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -107,12 +107,12 @@ export function WithdrawalForm({
           </p>
         </div>
 
-        <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+        <div className="p-3 sm:p-4 bg-purple-50 border border-purple-200 rounded-lg">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="h-4 w-4 text-purple-600" />
-            <p className="text-sm text-muted-foreground">Saldo Laba (Bisa Ditarik)</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Saldo Laba (Bisa Ditarik)</p>
           </div>
-          <p className="text-2xl font-bold text-purple-600">
+          <p className="text-xl sm:text-2xl font-bold text-purple-600">
             {formatRupiah(currentBalance)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
@@ -212,28 +212,28 @@ export function WithdrawalForm({
             Preview Setelah Penarikan
           </p>
 
-          <div className="flex items-center justify-center gap-4 text-center">
-            <div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center">
+            <div className="w-full sm:w-auto">
               <p className="text-xs text-muted-foreground">Saldo Sekarang</p>
-              <p className="text-lg font-semibold text-purple-600">
+              <p className="text-base sm:text-lg font-semibold text-purple-600">
                 {formatRupiah(currentBalance)}
               </p>
             </div>
 
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            <ArrowRight className="h-5 w-5 text-muted-foreground rotate-90 sm:rotate-0" />
 
-            <div>
+            <div className="w-full sm:w-auto">
               <p className="text-xs text-muted-foreground">Penarikan</p>
-              <p className="text-lg font-semibold text-red-600">
+              <p className="text-base sm:text-lg font-semibold text-red-600">
                 -{formatRupiah(amount)}
               </p>
             </div>
 
-            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            <ArrowRight className="h-5 w-5 text-muted-foreground rotate-90 sm:rotate-0" />
 
-            <div>
+            <div className="w-full sm:w-auto">
               <p className="text-xs text-muted-foreground">Saldo Akhir</p>
-              <p className={'text-lg font-semibold ' + (previewBalance >= 0 ? 'text-green-600' : 'text-red-600')}>
+              <p className={'text-base sm:text-lg font-semibold ' + (previewBalance >= 0 ? 'text-green-600' : 'text-red-600')}>
                 {formatRupiah(previewBalance)}
               </p>
             </div>

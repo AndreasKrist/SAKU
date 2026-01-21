@@ -30,10 +30,10 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar user={user as any} businesses={businesses} />
-      <div className="container max-w-6xl mx-auto py-12 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Bisnis Anda</h1>
-          <p className="text-muted-foreground">
+      <div className="container max-w-6xl mx-auto py-6 sm:py-8 md:py-12 px-4">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Bisnis Anda</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
             Pilih bisnis untuk melihat dashboard
           </p>
         </div>
@@ -67,14 +67,14 @@ export default async function DashboardPage() {
           })}
         </div>
 
-        <div className="flex gap-4">
-          <Button asChild>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/bisnis/buat">
               <Plus className="mr-2 h-4 w-4" />
               Buat Bisnis Baru
             </Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
             <Link href="/bisnis/gabung">
               <UserPlus className="mr-2 h-4 w-4" />
               Gabung Bisnis

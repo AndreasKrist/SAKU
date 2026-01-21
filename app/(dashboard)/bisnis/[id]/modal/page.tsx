@@ -69,8 +69,8 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Modal & Ekuitas</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold">Modal & Ekuitas</h1>
+        <p className="text-sm md:text-base text-muted-foreground mt-1">
           Kelola kontribusi modal dan lihat informasi penting
         </p>
       </div>
@@ -78,16 +78,16 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
       {/* Business Cash Banner */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
               <p className="text-sm text-muted-foreground mb-1">Kas Bisnis</p>
-              <p className="text-4xl font-bold text-blue-600">{formatRupiah(businessCash)}</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600">{formatRupiah(businessCash)}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 Uang liquid yang tersedia untuk operasional dan penarikan
               </p>
             </div>
-            <div className="text-right">
-              <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="sm:text-right">
+              <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm">
                 <p className="text-xs text-muted-foreground mb-1">Formula</p>
                 <p className="text-xs font-mono">Kontribusi + Revenue</p>
                 <p className="text-xs font-mono">- Expense (kas bisnis)</p>

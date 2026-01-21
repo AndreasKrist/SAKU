@@ -99,8 +99,8 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Penarikan Laba</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold">Penarikan Laba</h1>
+        <p className="text-sm md:text-base text-muted-foreground mt-1">
           Tarik bagian modal dan laba Anda dari bisnis
         </p>
       </div>
@@ -118,7 +118,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-xl sm:text-2xl font-bold text-blue-600">
               {formatRupiah(businessCash)}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
@@ -138,7 +138,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-xl sm:text-2xl font-bold text-green-600">
               {formatRupiah(totalProfit)}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
@@ -158,7 +158,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-xl sm:text-2xl font-bold text-red-600">
               {formatRupiah(totalWithdrawals)}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
@@ -178,7 +178,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-700">
+            <div className="text-2xl sm:text-3xl font-bold text-purple-700">
               {formatRupiah(availableProfit)}
             </div>
             <p className="text-xs text-purple-700 mt-2 font-medium">
@@ -203,37 +203,37 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
                 key={account.user_id}
                 className="border rounded-lg p-4 hover:bg-gray-50 transition"
               >
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3">
                   <div>
                     <h3 className="font-semibold">{account.user_name}</h3>
                     <p className="text-sm text-muted-foreground">
                       Ekuitas: {account.equity_percentage}%
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="sm:text-right">
                     <p className="text-xs text-muted-foreground">Saldo Laba (Bisa Ditarik)</p>
-                    <p className="text-2xl font-bold text-purple-600">
+                    <p className="text-xl sm:text-2xl font-bold text-purple-600">
                       {formatRupiah(account.current_balance)}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 text-sm">
-                  <div className="text-center p-2 bg-green-50 rounded">
-                    <p className="text-xs text-muted-foreground mb-1">Kontribusi</p>
-                    <p className="font-semibold text-green-600">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-sm">
+                  <div className="text-center flex sm:block items-center justify-between p-2 bg-green-50 rounded">
+                    <p className="text-xs text-muted-foreground sm:mb-1">Kontribusi</p>
+                    <p className="font-semibold text-green-600 text-xs sm:text-sm">
                       {formatRupiah(account.total_contributions)}
                     </p>
                   </div>
-                  <div className="text-center p-2 bg-blue-50 rounded">
-                    <p className="text-xs text-muted-foreground mb-1">Laba</p>
-                    <p className="font-semibold text-blue-600">
+                  <div className="text-center flex sm:block items-center justify-between p-2 bg-blue-50 rounded">
+                    <p className="text-xs text-muted-foreground sm:mb-1">Laba</p>
+                    <p className="font-semibold text-blue-600 text-xs sm:text-sm">
                       {formatRupiah(account.total_profit_allocated)}
                     </p>
                   </div>
-                  <div className="text-center p-2 bg-red-50 rounded">
-                    <p className="text-xs text-muted-foreground mb-1">Penarikan</p>
-                    <p className="font-semibold text-red-600">
+                  <div className="text-center flex sm:block items-center justify-between p-2 bg-red-50 rounded">
+                    <p className="text-xs text-muted-foreground sm:mb-1">Penarikan</p>
+                    <p className="font-semibold text-red-600 text-xs sm:text-sm">
                       {formatRupiah(account.total_withdrawals)}
                     </p>
                   </div>

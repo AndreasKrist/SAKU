@@ -37,11 +37,11 @@ export default async function BusinessLayout({
   const allBusinesses = (await getUserBusinesses(user.id)) as any[]
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
       <Sidebar businessId={params.id} />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <TopBar user={user as any} currentBusiness={business as any} businesses={allBusinesses} businessId={params.id} />
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-x-hidden">{children}</main>
       </div>
     </div>
   )

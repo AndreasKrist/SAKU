@@ -41,19 +41,19 @@ export function TopBar({ user, currentBusiness, businesses, businessId }: TopBar
         {businessId && <MobileNav businessId={businessId} />}
 
         {currentBusiness && (
-          <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-muted-foreground" />
-            <span className="font-semibold text-sm md:text-base">{currentBusiness.name}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <Building2 className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+            <span className="font-semibold text-sm md:text-base truncate max-w-[150px] sm:max-w-[200px] md:max-w-none">{currentBusiness.name}</span>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         {/* Business Selector */}
         {businesses.length > 1 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="hidden sm:flex">
                 Ganti Bisnis
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
@@ -75,11 +75,11 @@ export function TopBar({ user, currentBusiness, businesses, businessId }: TopBar
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2">
+            <Button variant="ghost" className="flex items-center gap-2 px-2 md:px-4">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>{getInitials(user.full_name)}</AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">{user.full_name || user.email || 'User'}</span>
+              <span className="hidden sm:inline text-sm font-medium max-w-[120px] truncate">{user.full_name || user.email || 'User'}</span>
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

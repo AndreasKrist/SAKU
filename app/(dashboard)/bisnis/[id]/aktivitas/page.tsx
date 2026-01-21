@@ -67,8 +67,8 @@ export default async function AktivitasPage({ params }: { params: { id: string }
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Log Aktivitas</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold">Log Aktivitas</h1>
+        <p className="text-sm md:text-base text-muted-foreground mt-1">
           Riwayat semua aktivitas bisnis
         </p>
       </div>
@@ -95,22 +95,22 @@ export default async function AktivitasPage({ params }: { params: { id: string }
 
                 return (
                   <div key={activity.id}>
-                    <div className="flex gap-4">
+                    <div className="flex gap-3 sm:gap-4">
                       {/* Icon */}
                       <div
-                        className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${colorClass}`}
+                        className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${colorClass}`}
                       >
-                        <Icon className="w-5 h-5" />
+                        <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-medium">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm sm:text-base break-words">
                               {activity.details?.description || activity.action.replace(/_/g, ' ')}
                             </p>
-                            <p className="text-sm text-muted-foreground mt-1">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                               oleh {activity.user?.full_name || 'Sistem'} •{' '}
                               {formatDate(activity.created_at)}
                             </p>
@@ -118,21 +118,23 @@ export default async function AktivitasPage({ params }: { params: { id: string }
                             {/* Metadata */}
                             {activity.details &&
                               Object.keys(activity.details).length > 0 && (
-                                <div className="mt-2 text-xs text-muted-foreground bg-gray-50 p-2 rounded">
-                                  {JSON.stringify(activity.details, null, 2)}
+                                <div className="mt-2 text-xs text-muted-foreground bg-gray-50 p-2 rounded overflow-x-auto">
+                                  <pre className="whitespace-pre-wrap break-words">
+                                    {JSON.stringify(activity.details, null, 2)}
+                                  </pre>
                                 </div>
                               )}
                           </div>
 
                           {/* Type Badge */}
-                          <Badge variant="outline" className="ml-2">
+                          <Badge variant="outline" className="text-xs self-start whitespace-nowrap">
                             {activity.action.replace(/_/g, ' ')}
                           </Badge>
                         </div>
                       </div>
                     </div>
 
-                    {index < activities.length - 1 && <Separator className="my-4" />}
+                    {index < activities.length - 1 && <Separator className="my-3 sm:my-4" />}
                   </div>
                 )
               })}
