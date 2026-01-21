@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Business, Profile } from '@/types'
 import {
   DropdownMenu,
@@ -24,6 +25,8 @@ interface TopBarProps {
 }
 
 export function TopBar({ user, currentBusiness, businesses, businessId }: TopBarProps) {
+  const router = useRouter()
+
   const getInitials = (name: string | undefined) => {
     if (!name) return 'U' // Default to 'U' for User if name is undefined
     return name
@@ -91,24 +94,18 @@ export function TopBar({ user, currentBusiness, businesses, businessId }: TopBar
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard">
-                <Building2 className="mr-2 h-4 w-4" />
-                Semua Bisnis
-              </Link>
+            <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+              <Building2 className="mr-2 h-4 w-4" />
+              Semua Bisnis
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/account/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                Pengaturan Akun
-              </Link>
+            <DropdownMenuItem onClick={() => router.push('/account/settings')}>
+              <Settings className="mr-2 h-4 w-4" />
+              Pengaturan Akun
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/logout" className="text-red-600">
-                <LogOut className="mr-2 h-4 w-4" />
-                Keluar
-              </Link>
+            <DropdownMenuItem onClick={() => router.push('/logout')} className="text-red-600">
+              <LogOut className="mr-2 h-4 w-4" />
+              Keluar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

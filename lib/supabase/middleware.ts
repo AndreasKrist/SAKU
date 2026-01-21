@@ -54,7 +54,15 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  await supabase.auth.getUser()
+  // Refresh the session - this is important to keep the session alive
+  // We intentionally ignore errors here to avoid logging out users
+  // when there are temporary network issues
+  const { error } = await supabase.auth.getUser()
+
+  // Only log errors in development, don't clear session on error
+  if (error && process.env.NODE_ENV === 'development') {
+    console.log('Middleware auth error:', error.message)
+  }
 
   return response
 }
