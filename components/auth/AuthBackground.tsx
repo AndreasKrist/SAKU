@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 
 export function AuthBackground() {
@@ -8,9 +9,23 @@ export function AuthBackground() {
   const vantaEffect = useRef<any>(null)
   const [threeLoaded, setThreeLoaded] = useState(false)
   const [vantaLoaded, setVantaLoaded] = useState(false)
+  const pathname = usePathname()
 
+  // Check if scripts are already loaded on mount
   useEffect(() => {
-    if (!threeLoaded || !vantaLoaded || !vantaRef.current || vantaEffect.current) return
+    const W = window as any
+    if (W.THREE) setThreeLoaded(true)
+    if (W.VANTA?.WAVES) setVantaLoaded(true)
+  }, [])
+
+  // Reinitialize on route change or when scripts load
+  useEffect(() => {
+    if (!threeLoaded || !vantaLoaded || !vantaRef.current) return
+
+    if (vantaEffect.current) {
+      vantaEffect.current.destroy()
+      vantaEffect.current = null
+    }
 
     const W = window as any
     if (!W.VANTA?.WAVES) return
@@ -42,7 +57,7 @@ export function AuthBackground() {
         vantaEffect.current = null
       }
     }
-  }, [threeLoaded, vantaLoaded])
+  }, [threeLoaded, vantaLoaded, pathname])
 
   return (
     <>
@@ -58,7 +73,7 @@ export function AuthBackground() {
           onLoad={() => setVantaLoaded(true)}
         />
       )}
-      <div ref={vantaRef} className="absolute inset-0 z-0" />
+      <div ref={vantaRef} className="absolute inset-0 z-0" style={{ backgroundColor: '#644A40' }} />
     </>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 const words = ['Kelola', 'Keuangan', 'Usaha', 'Bersama', 'Mitra']
 
@@ -8,6 +8,22 @@ export function HighlightHeading() {
   const [activeIndex, setActiveIndex] = useState(-1)
   const [done, setDone] = useState(false)
   const [pop, setPop] = useState(false)
+  const [key, setKey] = useState(0)
+
+  const resetAndPlay = useCallback(() => {
+    setActiveIndex(-1)
+    setDone(false)
+    setPop(false)
+    setKey((k) => k + 1)
+  }, [])
+
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) resetAndPlay()
+    }
+    window.addEventListener('pageshow', handlePageShow)
+    return () => window.removeEventListener('pageshow', handlePageShow)
+  }, [resetAndPlay])
 
   useEffect(() => {
     const startDelay = setTimeout(() => {
@@ -30,7 +46,7 @@ export function HighlightHeading() {
     }, 1200)
 
     return () => clearTimeout(startDelay)
-  }, [])
+  }, [key])
 
   return (
     <h1

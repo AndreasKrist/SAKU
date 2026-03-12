@@ -16,6 +16,7 @@ import {
 import { VantaBackground } from '@/components/VantaBackground'
 import { ScrollHint } from '@/components/ScrollHint'
 import { HighlightHeading } from '@/components/HighlightHeading'
+import { AnimationReset } from '@/components/AnimationReset'
 import { AnimatedFeatureCard } from '@/components/AnimatedFeatureCard'
 import { AnimatedCTA } from '@/components/AnimatedCTA'
 
@@ -27,7 +28,9 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <ScrollHint />
+      <AnimationReset>
+        <ScrollHint />
+      </AnimationReset>
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,7 +72,9 @@ export default async function LandingPage() {
                 Keuangan UMKM Jadi Mudah
               </div>
 
-              <HighlightHeading />
+              <AnimationReset>
+                <HighlightHeading />
+              </AnimationReset>
 
               <p className="text-lg sm:text-xl text-white/70 leading-relaxed mb-10 max-w-2xl mx-auto">
                 SAKU membantu UMKM mencatat transaksi, membagi laba secara

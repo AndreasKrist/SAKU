@@ -9,14 +9,24 @@ export function VantaBackground({ children }: { children?: React.ReactNode }) {
   const [threeLoaded, setThreeLoaded] = useState(false)
   const [vantaLoaded, setVantaLoaded] = useState(false)
 
+  // Check if scripts are already loaded on mount (client-side navigation back)
   useEffect(() => {
-    if (!threeLoaded || !vantaLoaded || !vantaRef.current || vantaEffect.current) return
+    const W = window as any
+    if (W.THREE) setThreeLoaded(true)
+    if (W.VANTA?.WAVES) setVantaLoaded(true)
+  }, [])
+
+  useEffect(() => {
+    if (!threeLoaded || !vantaLoaded || !vantaRef.current) return
+
+    // Destroy previous if exists
+    if (vantaEffect.current) {
+      vantaEffect.current.destroy()
+      vantaEffect.current = null
+    }
 
     const W = window as any
-    if (!W.VANTA?.WAVES) {
-      console.error('VANTA.WAVES not available')
-      return
-    }
+    if (!W.VANTA?.WAVES) return
 
     try {
       vantaEffect.current = W.VANTA.WAVES({
@@ -61,7 +71,7 @@ export function VantaBackground({ children }: { children?: React.ReactNode }) {
           onLoad={() => setVantaLoaded(true)}
         />
       )}
-      <div ref={vantaRef} className="relative overflow-hidden">
+      <div ref={vantaRef} className="relative overflow-hidden" style={{ backgroundColor: '#644A40' }}>
         <div className="absolute inset-0 bg-black/30 z-[1] pointer-events-none" />
         {children}
       </div>
