@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ChevronDown, LogOut, Building2, Settings, User } from 'lucide-react'
+import Image from 'next/image'
 import { MobileNav } from './MobileNav'
 
 interface TopBarProps {
@@ -40,6 +41,12 @@ export function TopBar({ user, currentBusiness, businesses, businessId }: TopBar
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6">
       <div className="flex items-center gap-4">
+        {/* Logo / Home */}
+        <Link href="/dashboard" className="flex items-center gap-2 flex-shrink-0">
+          <Image src="/saku.webp" alt="SAKU" width={28} height={28} className="rounded-md" />
+          <span className="font-bold text-sm">SAKU</span>
+        </Link>
+
         {/* Mobile Navigation */}
         {businessId && <MobileNav businessId={businessId} />}
 

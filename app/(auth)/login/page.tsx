@@ -77,10 +77,10 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="border-0">
+    <Card className="border-0 bg-transparent shadow-none">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Masuk</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-bold text-white">Masuk</CardTitle>
+        <CardDescription className="text-white/60">
           Masukkan email dan password untuk melanjutkan
         </CardDescription>
       </CardHeader>
@@ -92,7 +92,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-white/90">Email</Label>
                   <FormControl>
                     <Input
                       id="email"
@@ -112,7 +112,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white/90">Password</Label>
                   <FormControl>
                     <Input
                       id="password"
@@ -127,7 +127,7 @@ export default function LoginPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full shadow-[0_8px_30px_rgba(0,0,0,0.3)]" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -141,20 +141,17 @@ export default function LoginPage() {
         </Form>
 
         <div className="mt-6 space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-card px-2 text-muted-foreground">atau</span>
-            </div>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-white/20" />
+            <span className="text-sm text-white/50">atau</span>
+            <div className="flex-1 h-px bg-white/20" />
           </div>
 
           <GoogleSignInButton />
 
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-white/60">
             Belum punya akun?{' '}
-            <Link href="/signup" className="font-semibold text-primary hover:underline">
+            <Link href="/signup" className="font-semibold text-white hover:underline">
               Daftar di sini
             </Link>
           </div>

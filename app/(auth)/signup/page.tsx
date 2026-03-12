@@ -97,10 +97,10 @@ export default function SignupPage() {
   }
 
   return (
-    <Card className="border-0">
+    <Card className="border-0 bg-transparent shadow-none">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Daftar Akun Baru</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-bold text-white">Daftar Akun Baru</CardTitle>
+        <CardDescription className="text-white/60">
           Isi data di bawah untuk membuat akun SAKU
         </CardDescription>
       </CardHeader>
@@ -112,7 +112,7 @@ export default function SignupPage() {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="fullName">Nama Lengkap</Label>
+                  <Label htmlFor="fullName" className="text-white/90">Nama Lengkap</Label>
                   <FormControl>
                     <Input
                       id="fullName"
@@ -132,7 +132,7 @@ export default function SignupPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-white/90">Email</Label>
                   <FormControl>
                     <Input
                       id="email"
@@ -152,7 +152,7 @@ export default function SignupPage() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="phone">Nomor Telepon</Label>
+                  <Label htmlFor="phone" className="text-white/90">Nomor Telepon</Label>
                   <FormControl>
                     <Input
                       id="phone"
@@ -172,7 +172,7 @@ export default function SignupPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white/90">Password</Label>
                   <FormControl>
                     <Input
                       id="password"
@@ -192,7 +192,7 @@ export default function SignupPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
+                  <Label htmlFor="confirmPassword" className="text-white/90">Konfirmasi Password</Label>
                   <FormControl>
                     <Input
                       id="confirmPassword"
@@ -207,7 +207,7 @@ export default function SignupPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full shadow-[0_8px_30px_rgba(0,0,0,0.3)]" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -221,20 +221,17 @@ export default function SignupPage() {
         </Form>
 
         <div className="mt-6 space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-card px-2 text-muted-foreground">atau</span>
-            </div>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-white/20" />
+            <span className="text-sm text-white/50">atau</span>
+            <div className="flex-1 h-px bg-white/20" />
           </div>
 
           <GoogleSignInButton />
 
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-white/60">
             Sudah punya akun?{' '}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
+            <Link href="/login" className="font-semibold text-white hover:underline">
               Masuk di sini
             </Link>
           </div>

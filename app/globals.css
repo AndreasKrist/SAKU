@@ -84,6 +84,16 @@
   }
 }
 
+/* Scroll hint dot animation */
+@keyframes scroll-dot {
+  0% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.3; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-scroll-dot {
+  animation: scroll-dot 1.5s ease-in-out infinite;
+}
+
 /* Smooth transitions for interactive elements */
 @layer utilities {
   .transition-all {

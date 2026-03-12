@@ -39,7 +39,15 @@
       "Bash(find:*)",
       "mcp__ide__getDiagnostics",
       "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(cd \"D:/Pictures/SAKU\" && npx next build 2>&1 | tail -30)",
+      "Bash(cd \"D:/Pictures/SAKU\" && npx next build 2>&1)",
+      "Bash(cd \"D:/Pictures/SAKU\" && npx next build)",
+      "Bash(cd D:/Pictures/SAKU && npx next lint 2>&1)",
+      "Bash(npx next:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cd D:/Pictures/SAKU && node -e \"\nconst fs = require\\('fs'\\);\n// Create a simple 64x64 noise PNG\n// PNG signature + minimal IHDR + IDAT with random-ish data + IEND\nconst { createCanvas } = require\\('canvas'\\);\n\" 2>&1 || echo \"no canvas module\")",
+      "Bash(curl -v \"https://www.vantajs.com/gallery/noise.png\" -o D:/Pictures/SAKU/public/gallery/noise.png 2> D:/Pictures/SAKU/_curl.txt; head -30 D:/Pictures/SAKU/_curl.txt)"
     ]
   }
 }
