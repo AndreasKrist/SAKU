@@ -27,12 +27,12 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: '#3a2a24' }}>
       <AnimationReset>
         <ScrollHint />
       </AnimationReset>
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-xl border-b border-white/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
@@ -43,15 +43,15 @@ export default async function LandingPage() {
                 height={36}
                 className="rounded-lg"
               />
-              <span className="text-lg font-bold tracking-tight text-foreground">
+              <span className="text-lg font-bold tracking-tight text-white">
                 SAKU
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10" asChild>
                 <Link href="/login">Masuk</Link>
               </Button>
-              <Button size="sm" asChild>
+              <Button size="sm" className="bg-white/15 text-white border border-white/20 backdrop-blur-sm hover:bg-white/25 shadow-lg" asChild>
                 <Link href="/signup">
                   Daftar Gratis
                   <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -67,7 +67,7 @@ export default async function LandingPage() {
         <section className="h-screen max-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full bg-white/20 border border-white/30 text-white text-xs font-semibold tracking-wide uppercase">
+              <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-semibold tracking-wide uppercase shadow-lg">
                 <Wallet className="h-3.5 w-3.5" />
                 Keuangan UMKM Jadi Mudah
               </div>
@@ -96,7 +96,7 @@ export default async function LandingPage() {
             </div>
 
             {/* Stats bar */}
-            <div className="mt-20 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+            <div className="mt-20 grid grid-cols-3 gap-4 max-w-lg mx-auto bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-4 shadow-lg">
               {[
                 { value: 'Multi-Mitra', label: 'Kelola bersama' },
                 { value: 'Real-time', label: 'Laporan keuangan' },
@@ -121,13 +121,13 @@ export default async function LandingPage() {
       </VantaBackground>
 
       {/* Features Section */}
-      <section className="py-20 sm:py-28 bg-card/50 border-y">
+      <section className="py-20 sm:py-28 bg-white/5 backdrop-blur-sm border-y border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-primary/70 mb-3">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/50 mb-3">
               Fitur Utama
             </h2>
-            <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+            <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
               Semua yang Anda butuhkan
             </p>
           </div>
@@ -138,25 +138,21 @@ export default async function LandingPage() {
                 icon: Users,
                 title: 'Manajemen Mitra',
                 desc: 'Undang mitra, atur ekuitas, dan kelola peran dalam satu bisnis bersama.',
-                accent: 'bg-primary/10 text-primary',
               },
               {
                 icon: Receipt,
                 title: 'Catat Transaksi',
                 desc: 'Pemasukan & pengeluaran tercatat rapi. Dukung pembayaran dari kas pribadi mitra.',
-                accent: 'bg-secondary/80 text-secondary-foreground',
               },
               {
                 icon: PieChart,
                 title: 'Distribusi Laba',
                 desc: 'Hitung laba otomatis dan bagikan sesuai persentase ekuitas masing-masing mitra.',
-                accent: 'bg-primary/10 text-primary',
               },
               {
                 icon: FileText,
                 title: 'Laporan Keuangan',
                 desc: 'Laba rugi, arus kas, dan modal mitra — semua tersedia dan bisa diekspor ke PDF.',
-                accent: 'bg-secondary/80 text-secondary-foreground',
               },
             ].map((feature, i) => (
               <AnimatedFeatureCard
@@ -164,14 +160,12 @@ export default async function LandingPage() {
                 direction={i < 2 ? 'left' : 'right'}
                 delay={i * 100}
               >
-                <div className="group relative p-6 rounded-xl bg-card border hover:border-primary/20 hover:shadow-lg transition-all duration-300 h-full">
-                  <div
-                    className={`inline-flex items-center justify-center w-11 h-11 rounded-lg mb-4 ${feature.accent}`}
-                  >
-                    <feature.icon className="h-5 w-5" />
+                <div className="group relative p-6 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 hover:bg-white/15 hover:shadow-lg transition-all duration-300 h-full">
+                  <div className="inline-flex items-center justify-center w-11 h-11 rounded-lg mb-4 bg-white/10 border border-white/20">
+                    <feature.icon className="h-5 w-5 text-white/80" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h3 className="font-semibold text-white mb-2">{feature.title}</h3>
+                  <p className="text-sm text-white/60 leading-relaxed">
                     {feature.desc}
                   </p>
                 </div>
@@ -185,10 +179,10 @@ export default async function LandingPage() {
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-primary/70 mb-3">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-white/50 mb-3">
               Cara Kerja
             </h2>
-            <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+            <p className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
               3 langkah mudah
             </p>
           </div>
@@ -213,14 +207,14 @@ export default async function LandingPage() {
             ].map((item, i) => (
               <AnimatedFeatureCard key={item.step} direction="left" delay={i * 150}>
                 <div className="relative text-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground text-lg font-bold mb-5">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-lg font-bold mb-5">
                     {item.step}
                   </div>
                   {i < 2 && (
-                    <ChevronRight className="hidden md:block absolute top-7 -right-4 translate-x-1/2 h-5 w-5 text-muted-foreground/40" />
+                    <ChevronRight className="hidden md:block absolute top-7 -right-4 translate-x-1/2 h-5 w-5 text-white/30" />
                   )}
-                  <h3 className="font-semibold text-foreground mb-2 text-lg">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  <h3 className="font-semibold text-white mb-2 text-lg">{item.title}</h3>
+                  <p className="text-sm text-white/60 leading-relaxed max-w-xs mx-auto">
                     {item.desc}
                   </p>
                 </div>
@@ -234,25 +228,24 @@ export default async function LandingPage() {
       <section className="py-20 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedCTA>
-            <div className="relative rounded-2xl overflow-hidden bg-primary px-8 py-14 sm:px-16 sm:py-20 text-center">
+            <div className="relative rounded-2xl overflow-hidden bg-white/10 backdrop-blur-xl border border-white/15 px-8 py-14 sm:px-16 sm:py-20 text-center">
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full border-[40px] border-primary-foreground/20" />
-                <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full border-[30px] border-primary-foreground/10" />
+                <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full border-[40px] border-white/20" />
+                <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full border-[30px] border-white/10" />
               </div>
 
               <div className="relative z-10">
-                <Shield className="h-10 w-10 text-primary-foreground/80 mx-auto mb-6" />
-                <h2 className="text-2xl sm:text-3xl font-bold text-primary-foreground mb-4">
+                <Shield className="h-10 w-10 text-white/80 mx-auto mb-6" />
+                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
                   Siap kelola keuangan usaha Anda?
                 </h2>
-                <p className="text-primary-foreground/70 max-w-md mx-auto mb-8 text-sm sm:text-base">
+                <p className="text-white/60 max-w-md mx-auto mb-8 text-sm sm:text-base">
                   Bergabunglah sekarang dan rasakan kemudahan mengelola keuangan
                   UMKM bersama mitra bisnis Anda.
                 </p>
                 <Button
                   size="lg"
-                  variant="secondary"
-                  className="text-base px-8 h-12 shadow-lg"
+                  className="text-base px-8 h-12 shadow-lg bg-white/15 text-white border border-white/20 backdrop-blur-sm hover:bg-white/25"
                   asChild
                 >
                   <Link href="/signup">
@@ -267,7 +260,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-card/30">
+      <footer className="border-t border-white/10 bg-white/5 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Brand */}
@@ -280,9 +273,9 @@ export default async function LandingPage() {
                   height={28}
                   className="rounded-md"
                 />
-                <span className="font-bold text-foreground">SAKU</span>
+                <span className="font-bold text-white">SAKU</span>
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              <p className="text-sm text-white/50 leading-relaxed max-w-xs">
                 Sistem Aplikasi Keuangan UMKM — platform pencatatan keuangan
                 dan manajemen mitra untuk usaha kecil menengah Indonesia.
               </p>
@@ -290,12 +283,12 @@ export default async function LandingPage() {
 
             {/* Product */}
             <div>
-              <h4 className="text-sm font-semibold text-foreground mb-3">Produk</h4>
+              <h4 className="text-sm font-semibold text-white mb-3">Produk</h4>
               <ul className="space-y-2">
                 {['Manajemen Mitra', 'Catat Transaksi', 'Laporan Keuangan', 'Distribusi Laba'].map(
                   (item) => (
                     <li key={item}>
-                      <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-default">
+                      <span className="text-sm text-white/40 hover:text-white/70 transition-colors cursor-default">
                         {item}
                       </span>
                     </li>
@@ -306,15 +299,15 @@ export default async function LandingPage() {
 
             {/* Resources */}
             <div>
-              <h4 className="text-sm font-semibold text-foreground mb-3">Akun</h4>
+              <h4 className="text-sm font-semibold text-white mb-3">Akun</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href="/login" className="text-sm text-white/40 hover:text-white/70 transition-colors">
                     Masuk
                   </Link>
                 </li>
                 <li>
-                  <Link href="/signup" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href="/signup" className="text-sm text-white/40 hover:text-white/70 transition-colors">
                     Daftar
                   </Link>
                 </li>
@@ -323,11 +316,11 @@ export default async function LandingPage() {
 
             {/* Legal */}
             <div>
-              <h4 className="text-sm font-semibold text-foreground mb-3">Informasi</h4>
+              <h4 className="text-sm font-semibold text-white mb-3">Informasi</h4>
               <ul className="space-y-2">
                 {['Kebijakan Privasi', 'Syarat & Ketentuan'].map((item) => (
                   <li key={item}>
-                    <span className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-default">
+                    <span className="text-sm text-white/40 hover:text-white/70 transition-colors cursor-default">
                       {item}
                     </span>
                   </li>
@@ -336,11 +329,11 @@ export default async function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-10 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
+          <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-white/30">
               &copy; {new Date().getFullYear()} SAKU. Hak cipta dilindungi.
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/30">
               Dibuat untuk UMKM Indonesia
             </p>
           </div>
