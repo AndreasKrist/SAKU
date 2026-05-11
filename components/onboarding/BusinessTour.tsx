@@ -71,6 +71,15 @@ export function BusinessTour({ businessId }: BusinessTourProps) {
             align: 'start' as const,
           },
         },
+        {
+          element: '#tour-menu-aktivitas',
+          popover: {
+            title: '📋 Aktivitas',
+            description: 'Semua perubahan di bisnis otomatis tercatat di sini — transaksi, modal, distribusi laba, hingga perubahan ekuitas. Untuk audit dan transparansi antar mitra.',
+            side: 'right' as const,
+            align: 'start' as const,
+          },
+        },
       ]
 
       const driverObj = driver({

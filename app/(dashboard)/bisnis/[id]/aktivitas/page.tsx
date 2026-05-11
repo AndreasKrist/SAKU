@@ -13,6 +13,7 @@ import {
   Building2,
   Activity as ActivityIcon,
 } from 'lucide-react'
+import { PageTip } from '@/components/onboarding/PageTip'
 
 const ACTION_ICONS: { [key: string]: any } = {
   transaction_revenue: Receipt,
@@ -72,6 +73,11 @@ export default async function AktivitasPage({ params }: { params: { id: string }
           Riwayat semua aktivitas bisnis
         </p>
       </div>
+
+      <PageTip
+        tipKey="aktivitas"
+        message="Semua perubahan di bisnis ini otomatis tercatat di sini — mulai dari transaksi baru, kontribusi modal, distribusi laba, hingga perubahan ekuitas. Berguna untuk audit dan transparansi antar mitra."
+      />
 
       {/* Activity Log */}
       <Card>
