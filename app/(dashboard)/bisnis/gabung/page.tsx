@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { joinBusiness } from '@/lib/actions/business'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,21 +20,36 @@ import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
+const joinBusinessSchema = z.object({
+  code: z
+    .string()
+    .min(1, 'Kode bisnis wajib diisi')
+    .regex(/^BIZ-[A-Z0-9]{6}$/i, 'Format kode tidak valid. Contoh: BIZ-ABC123'),
+})
+
+type JoinBusinessFormData = z.infer<typeof joinBusinessSchema>
+
 export default function JoinBusinessPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const codeFromUrl = searchParams.get('code')
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<JoinBusinessFormData>({
+    resolver: zodResolver(joinBusinessSchema),
+    defaultValues: {
+      code: codeFromUrl || '',
+    },
+  })
+
+  async function onSubmit(data: JoinBusinessFormData) {
     setLoading(true)
-
-    const formData = new FormData(e.currentTarget)
-    const code = formData.get('code') as string
-
     try {
-      const result = await joinBusiness(code)
+      const result = await joinBusiness(data.code)
 
       if (result?.error) {
         toast.error(result.error)
@@ -64,19 +82,20 @@ export default function JoinBusinessPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="code">Kode Bisnis *</Label>
                 <Input
                   id="code"
-                  name="code"
                   type="text"
                   placeholder="BIZ-XXXXXX"
-                  defaultValue={codeFromUrl || ''}
-                  required
                   disabled={loading}
                   className="uppercase"
+                  {...register('code')}
                 />
+                {errors.code && (
+                  <p className="text-sm text-red-600">{errors.code.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   Format: BIZ-XXXXXX
                 </p>

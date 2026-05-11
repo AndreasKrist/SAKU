@@ -14,14 +14,19 @@ import { toast } from 'sonner'
 import { formatDateForInput, formatRupiah } from '@/lib/utils'
 import type { BusinessMemberWithProfile } from '@/types'
 
-const distributionSchema = z.object({
-  period_start: z.string().min(1, 'Tanggal mulai wajib diisi'),
-  period_end: z.string().min(1, 'Tanggal akhir wajib diisi'),
-  distribution_percentage: z
-    .number()
-    .min(0, 'Minimal 0%')
-    .max(100, 'Maksimal 100%'),
-})
+const distributionSchema = z
+  .object({
+    period_start: z.string().min(1, 'Tanggal mulai wajib diisi'),
+    period_end: z.string().min(1, 'Tanggal akhir wajib diisi'),
+    distribution_percentage: z
+      .number()
+      .min(1, 'Persentase minimal 1%')
+      .max(100, 'Maksimal 100%'),
+  })
+  .refine((data) => data.period_start <= data.period_end, {
+    message: 'Tanggal akhir harus setelah tanggal mulai',
+    path: ['period_end'],
+  })
 
 type DistributionFormData = z.infer<typeof distributionSchema>
 

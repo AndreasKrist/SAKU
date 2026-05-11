@@ -46,8 +46,7 @@ const signupSchema = z
     password: z
       .string()
       .min(1, 'Password wajib diisi')
-      .min(6, 'Password minimal 6 karakter')
-      .min(8, 'Password minimal 8 karakter untuk keamanan lebih baik'),
+      .min(8, 'Password minimal 8 karakter'),
     confirmPassword: z.string().min(1, 'Konfirmasi password wajib diisi'),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 import { createBusiness } from '@/lib/actions/business'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,34 +22,51 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { formatDateForInput } from '@/lib/utils'
 
+const createBusinessSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Nama bisnis wajib diisi')
+    .min(3, 'Nama bisnis minimal 3 karakter')
+    .max(100, 'Nama bisnis maksimal 100 karakter'),
+  description: z.string().optional(),
+  start_date: z.string().min(1, 'Tanggal mulai wajib diisi'),
+})
+
+type CreateBusinessFormData = z.infer<typeof createBusinessSchema>
+
 export default function CreateBusinessPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateBusinessFormData>({
+    resolver: zodResolver(createBusinessSchema),
+    defaultValues: {
+      start_date: formatDateForInput(new Date()),
+    },
+  })
+
+  async function onSubmit(data: CreateBusinessFormData) {
     setLoading(true)
-
-    const formData = new FormData(e.currentTarget)
-    const name = formData.get('name') as string
-    const description = formData.get('description') as string
-    const start_date = formData.get('start_date') as string
-
     try {
-      const result = await createBusiness({ name, description, startDate: start_date })
+      const result = await createBusiness({
+        name: data.name,
+        description: data.description,
+        startDate: data.start_date,
+      })
 
       if (result?.error) {
-        console.error('Business creation error:', result.error)
         toast.error(result.error)
       } else if (result?.businessId) {
         toast.success('Bisnis berhasil dibuat!')
         router.push(`/bisnis/${result.businessId}`)
       } else {
-        console.error('Unknown result:', result)
         toast.error('Tidak ada hasil dari pembuatan bisnis')
       }
     } catch (error) {
-      console.error('Exception during business creation:', error)
       toast.error(`Terjadi kesalahan: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setLoading(false)
@@ -72,27 +92,29 @@ export default function CreateBusinessPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nama Bisnis *</Label>
                 <Input
                   id="name"
-                  name="name"
                   type="text"
                   placeholder="Toko Bunga Mawar"
-                  required
                   disabled={loading}
+                  {...register('name')}
                 />
+                {errors.name && (
+                  <p className="text-sm text-red-600">{errors.name.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">Deskripsi</Label>
                 <Textarea
                   id="description"
-                  name="description"
                   placeholder="Deskripsi singkat tentang bisnis..."
                   rows={3}
                   disabled={loading}
+                  {...register('description')}
                 />
               </div>
 
@@ -100,12 +122,13 @@ export default function CreateBusinessPage() {
                 <Label htmlFor="start_date">Tanggal Mulai *</Label>
                 <Input
                   id="start_date"
-                  name="start_date"
                   type="date"
-                  defaultValue={formatDateForInput(new Date())}
-                  required
                   disabled={loading}
+                  {...register('start_date')}
                 />
+                {errors.start_date && (
+                  <p className="text-sm text-red-600">{errors.start_date.message}</p>
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">

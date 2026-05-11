@@ -24,6 +24,13 @@ export async function signup(formData: {
   })
 
   if (authError) {
+    const msg = authError.message.toLowerCase()
+    if (msg.includes('user already registered') || msg.includes('already been registered')) {
+      return { error: 'Email ini sudah terdaftar. Silakan login atau gunakan email lain.' }
+    }
+    if (msg.includes('password')) {
+      return { error: 'Password tidak memenuhi syarat. Minimal 8 karakter.' }
+    }
     return { error: authError.message }
   }
 
@@ -44,6 +51,16 @@ export async function login(formData: { email: string; password: string }) {
   })
 
   if (error) {
+    const msg = error.message.toLowerCase()
+    if (msg.includes('invalid login credentials') || msg.includes('invalid email or password')) {
+      return { error: 'Email atau password salah. Silakan coba lagi.' }
+    }
+    if (msg.includes('email not confirmed')) {
+      return { error: 'Email belum diverifikasi. Silakan cek kotak masuk email Anda.' }
+    }
+    if (msg.includes('too many requests')) {
+      return { error: 'Terlalu banyak percobaan login. Silakan coba lagi beberapa saat.' }
+    }
     return { error: error.message }
   }
 
