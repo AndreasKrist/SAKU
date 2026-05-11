@@ -10,6 +10,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { DeleteBusinessDialog } from '@/components/business/DeleteBusinessDialog'
 import { formatRupiah } from '@/lib/utils'
 import { Users, Settings, Copy, CheckCircle, AlertTriangle } from 'lucide-react'
+import { PageTip } from '@/components/onboarding/PageTip'
 
 export default async function MitraPage({ params }: { params: { id: string } }) {
   const user = await getCurrentUser()
@@ -58,6 +59,11 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
           </Button>
         )}
       </div>
+
+      <PageTip
+        tipKey="mitra"
+        message="Ekuitas menentukan berapa persen kepemilikan setiap mitra. Pastikan total ekuitas semua mitra tepat 100% agar distribusi laba bisa dilakukan. Bagikan kode bisnis di bawah untuk mengundang mitra baru."
+      />
 
       {/* Equity Warning */}
       {needsEquitySetup && (

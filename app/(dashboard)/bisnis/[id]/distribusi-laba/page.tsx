@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ProfitDistributionForm } from '@/components/profit/ProfitDistributionForm'
 import { DistributionHistory } from '@/components/profit/DistributionHistory'
 import { formatRupiah, formatDate } from '@/lib/utils'
+import { PageTip } from '@/components/onboarding/PageTip'
 
 export default async function DistribusiLabaPage({ params }: { params: { id: string } }) {
   const user = await getCurrentUser()
@@ -51,6 +52,11 @@ export default async function DistribusiLabaPage({ params }: { params: { id: str
           Distribusikan laba bersih kepada mitra sesuai ekuitas
         </p>
       </div>
+
+      <PageTip
+        tipKey="distribusi-laba"
+        message="Pilih periode waktu, lalu klik 'Hitung Preview' untuk melihat berapa laba yang bisa dibagi. Laba akan otomatis dibagi ke setiap mitra sesuai persentase ekuitas mereka."
+      />
 
       {/* Info Card */}
       <Card className="border-blue-200 bg-blue-50">

@@ -14,6 +14,7 @@ import { WithdrawalForm } from '@/components/capital/WithdrawalForm'
 import { GroupWithdrawalForm } from '@/components/capital/GroupWithdrawalForm'
 import { formatRupiah, formatDate } from '@/lib/utils'
 import { TrendingUp, Wallet, DollarSign, Banknote, ArrowDown } from 'lucide-react'
+import { PageTip } from '@/components/onboarding/PageTip'
 
 export default async function PenarikanLabaPage({ params }: { params: { id: string } }) {
   const user = await getCurrentUser()
@@ -104,6 +105,11 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
           Tarik bagian modal dan laba Anda dari bisnis
         </p>
       </div>
+
+      <PageTip
+        tipKey="penarikan-laba"
+        message="Yang bisa ditarik hanya laba yang sudah didistribusikan — bukan kontribusi modal (itu adalah kepemilikan). Gunakan 'Tarik Bersama' jika ingin menarik laba semua mitra sekaligus (khusus pemilik)."
+      />
 
       {/* Metrics Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

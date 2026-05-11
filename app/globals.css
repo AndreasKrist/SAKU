@@ -134,3 +134,109 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* ===================== */
+/* Driver.js Tour Styles */
+/* ===================== */
+.driver-popover {
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  padding: 20px !important;
+  min-width: 280px !important;
+  max-width: 340px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+}
+
+.driver-popover-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+  margin-bottom: 8px !important;
+  line-height: 1.4 !important;
+}
+
+.driver-popover-description {
+  font-size: 13px !important;
+  color: #555 !important;
+  line-height: 1.6 !important;
+  margin-bottom: 0 !important;
+}
+
+.driver-popover-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 16px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid #f0f0f0 !important;
+  gap: 8px !important;
+}
+
+.driver-popover-progress-text {
+  font-size: 11px !important;
+  color: #999 !important;
+  font-weight: 500 !important;
+  flex: 1 !important;
+}
+
+.driver-popover-prev-btn {
+  background: transparent !important;
+  color: hsl(16.6667 21.9512% 32.1569%) !important;
+  border: 1.5px solid hsl(16.6667 21.9512% 32.1569%) !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  line-height: 1.4 !important;
+  text-shadow: none !important;
+}
+
+.driver-popover-prev-btn:hover {
+  background: hsl(16.6667 21.9512% 32.1569% / 0.08) !important;
+}
+
+.driver-popover-next-btn {
+  background: hsl(16.6667 21.9512% 32.1569%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  line-height: 1.4 !important;
+  text-shadow: none !important;
+  box-shadow: 0 2px 8px hsl(16.6667 21.9512% 32.1569% / 0.35) !important;
+}
+
+.driver-popover-next-btn:hover {
+  opacity: 0.88 !important;
+  box-shadow: 0 4px 12px hsl(16.6667 21.9512% 32.1569% / 0.45) !important;
+}
+
+.driver-popover-close-btn {
+  color: #aaa !important;
+  font-size: 18px !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  padding: 2px !important;
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  transition: color 0.15s !important;
+  text-shadow: none !important;
+}
+
+.driver-popover-close-btn:hover {
+  color: #333 !important;
+}
+
+.driver-overlay {
+  background: rgba(0, 0, 0, 0.45) !important;
+}

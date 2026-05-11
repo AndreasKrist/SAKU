@@ -4,6 +4,7 @@ import { getBusinessById, getBusinessMembers, getBusinessTransactions, getTransa
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { TransactionForm } from '@/components/transactions/TransactionForm'
 import { TransactionList } from '@/components/transactions/TransactionList'
+import { PageTip } from '@/components/onboarding/PageTip'
 
 export default async function TransaksiPage({ params }: { params: { id: string } }) {
   const user = await getCurrentUser()
@@ -45,6 +46,11 @@ export default async function TransaksiPage({ params }: { params: { id: string }
           Kelola pemasukan dan pengeluaran bisnis
         </p>
       </div>
+
+      <PageTip
+        tipKey="transaksi"
+        message="Catat setiap pemasukan (pendapatan) dan pengeluaran bisnis di sini. Jika pengeluaran dibayar pakai uang pribadi mitra, pilih nama mitra di 'Sumber Pembayaran' — otomatis tercatat sebagai kontribusi modal."
+      />
 
       {/* Add Transaction Form */}
       <Card>

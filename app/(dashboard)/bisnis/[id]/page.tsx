@@ -20,11 +20,16 @@ import {
   Receipt,
   Crown,
 } from 'lucide-react'
+import { PeriodFilter } from '@/components/business/PeriodFilter'
+import { DashboardStats } from '@/components/business/DashboardStats'
+import { BusinessTour } from '@/components/onboarding/BusinessTour'
 
 export default async function BusinessDashboardPage({
   params,
+  searchParams,
 }: {
   params: { id: string }
+  searchParams: { start?: string; end?: string; new?: string }
 }) {
   const user = await getCurrentUser()
 
@@ -44,26 +49,14 @@ export default async function BusinessDashboardPage({
     redirect('/dashboard')
   }
 
-  // Get transactions for current month
   const now = new Date()
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+  const filterStart = searchParams.start
+  const filterEnd = searchParams.end
 
   const transactions = (await getBusinessTransactions(params.id, {
-    startDate: firstDayOfMonth.toISOString().split('T')[0],
-    endDate: lastDayOfMonth.toISOString().split('T')[0],
+    startDate: filterStart,
+    endDate: filterEnd,
   })) as any[]
-
-  // Calculate totals
-  const totalRevenue = transactions
-    .filter((t) => t.type === 'revenue')
-    .reduce((sum, t) => sum + Number(t.amount), 0)
-
-  const totalExpense = transactions
-    .filter((t) => t.type === 'expense')
-    .reduce((sum, t) => sum + Number(t.amount), 0)
-
-  const netProfit = totalRevenue - totalExpense
 
   // Get capital accounts
   const capitalAccounts = (await getPartnerCapitalAccounts(params.id)) as any[]
@@ -81,6 +74,8 @@ export default async function BusinessDashboardPage({
 
   return (
     <div className="space-y-4 md:space-y-6">
+      <BusinessTour businessId={params.id} />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
         <div className="min-w-0 flex-1">
@@ -96,6 +91,11 @@ export default async function BusinessDashboardPage({
           <span className="hidden sm:inline">{now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
           <span className="sm:hidden">{now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
         </div>
+      </div>
+
+      {/* Period Filter */}
+      <div id="tour-period-filter">
+        <PeriodFilter currentStart={filterStart} currentEnd={filterEnd} />
       </div>
 
       {/* Equity Setup Warning */}
@@ -121,92 +121,19 @@ export default async function BusinessDashboardPage({
         </Card>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-emerald-500/20 to-transparent rounded-bl-full"></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Pendapatan
-            </CardTitle>
-            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-100">
-              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0">
-            <div className="text-base sm:text-lg md:text-2xl font-bold text-emerald-600 truncate">
-              {formatRupiah(totalRevenue)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1 sm:mt-2 flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-              {transactions.filter((t) => t.type === 'revenue').length} transaksi
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-rose-500/20 to-transparent rounded-bl-full"></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Pengeluaran
-            </CardTitle>
-            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-100">
-              <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-rose-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0">
-            <div className="text-base sm:text-lg md:text-2xl font-bold text-rose-600 truncate">
-              {formatRupiah(totalExpense)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1 sm:mt-2 flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-rose-500"></span>
-              {transactions.filter((t) => t.type === 'expense').length} transaksi
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className={`absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl ${netProfit >= 0 ? 'from-blue-500/20' : 'from-orange-500/20'} to-transparent rounded-bl-full`}></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Laba Bersih</CardTitle>
-            <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl ${netProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'}`}>
-              <TrendingUp className={`h-4 w-4 sm:h-5 sm:w-5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0">
-            <div
-              className={`text-base sm:text-lg md:text-2xl font-bold truncate ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}
-            >
-              {formatRupiah(netProfit)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1 sm:mt-2">
-              {now.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow">
-          <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-violet-500/20 to-transparent rounded-bl-full"></div>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Laba Ditarik</CardTitle>
-            <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-violet-100">
-              <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-3 sm:p-4 pt-0">
-            <div className="text-base sm:text-lg md:text-2xl font-bold text-violet-600 truncate">
-              {formatRupiah(totalCapital)}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1 sm:mt-2 flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              {members.length} mitra
-            </p>
-          </CardContent>
-        </Card>
+      {/* Stats Cards + Chart */}
+      <div id="tour-stat-cards">
+      <DashboardStats
+        transactions={transactions}
+        totalCapital={totalCapital}
+        memberCount={members.length}
+        filterStart={filterStart}
+        filterEnd={filterEnd}
+      />
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+      <div id="tour-quick-actions" className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <Link
           href={`/bisnis/${params.id}/transaksi`}
           className="group flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
@@ -261,11 +188,13 @@ export default async function BusinessDashboardPage({
       </div>
 
       {/* Recent Transactions */}
-      <Card className="border-0 shadow-md">
+      <Card id="tour-recent-transactions" className="border-0 shadow-md">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
           <div>
             <CardTitle className="text-base sm:text-lg">Transaksi Terbaru</CardTitle>
-            <p className="text-xs sm:text-sm text-muted-foreground">Aktivitas bulan ini</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {filterStart && filterEnd ? `${filterStart} – ${filterEnd}` : 'Semua waktu'}
+            </p>
           </div>
           <Button asChild variant="outline" size="sm" className="rounded-full w-full sm:w-auto">
             <Link href={`/bisnis/${params.id}/transaksi`}>
@@ -280,7 +209,9 @@ export default async function BusinessDashboardPage({
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                 <Receipt className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground">Belum ada transaksi bulan ini</p>
+              <p className="text-muted-foreground">
+                {filterStart && filterEnd ? 'Belum ada transaksi di periode ini' : 'Belum ada transaksi'}
+              </p>
               <Button asChild className="mt-4" size="sm">
                 <Link href={`/bisnis/${params.id}/transaksi`}>
                   <Plus className="mr-2 h-4 w-4" />

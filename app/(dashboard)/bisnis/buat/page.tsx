@@ -62,7 +62,7 @@ export default function CreateBusinessPage() {
         toast.error(result.error)
       } else if (result?.businessId) {
         toast.success('Bisnis berhasil dibuat!')
-        router.push(`/bisnis/${result.businessId}`)
+        router.push(`/bisnis/${result.businessId}?new=1`)
       } else {
         toast.error('Tidak ada hasil dari pembuatan bisnis')
       }

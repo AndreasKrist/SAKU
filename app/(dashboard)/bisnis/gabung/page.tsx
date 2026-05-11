@@ -55,7 +55,7 @@ export default function JoinBusinessPage() {
         toast.error(result.error)
       } else if (result?.success && result.business) {
         toast.success('Berhasil bergabung dengan bisnis!')
-        router.push(`/bisnis/${result.business.id}`)
+        router.push(`/bisnis/${result.business.id}?new=1`)
       }
     } catch (error) {
       toast.error('Terjadi kesalahan')

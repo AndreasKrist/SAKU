@@ -20,13 +20,13 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { href: '', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/mitra', label: 'Mitra', icon: Users },
-  { href: '/transaksi', label: 'Transaksi', icon: Receipt },
-  { href: '/modal', label: 'Modal & Ekuitas', icon: Wallet },
-  { href: '/penarikan-laba', label: 'Penarikan Laba', icon: Banknote },
-  { href: '/laporan', label: 'Laporan', icon: FileText },
-  { href: '/aktivitas', label: 'Aktivitas', icon: Activity },
+  { href: '', label: 'Dashboard', icon: LayoutDashboard, tourId: 'tour-menu-dashboard' },
+  { href: '/mitra', label: 'Mitra', icon: Users, tourId: 'tour-menu-mitra' },
+  { href: '/transaksi', label: 'Transaksi', icon: Receipt, tourId: 'tour-menu-transaksi' },
+  { href: '/modal', label: 'Modal & Ekuitas', icon: Wallet, tourId: 'tour-menu-modal' },
+  { href: '/penarikan-laba', label: 'Penarikan Laba', icon: Banknote, tourId: 'tour-menu-penarikan' },
+  { href: '/laporan', label: 'Laporan', icon: FileText, tourId: 'tour-menu-laporan' },
+  { href: '/aktivitas', label: 'Aktivitas', icon: Activity, tourId: 'tour-menu-aktivitas' },
 ]
 
 export function Sidebar({ businessId }: SidebarProps) {
@@ -72,6 +72,7 @@ export function Sidebar({ businessId }: SidebarProps) {
             <Link
               key={href}
               href={href}
+              id={item.tourId}
               className={cn(
                 'group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
                 isActive

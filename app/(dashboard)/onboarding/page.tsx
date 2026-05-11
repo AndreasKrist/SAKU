@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Plus, UserPlus } from 'lucide-react'
+import { WelcomeModal } from '@/components/onboarding/WelcomeModal'
 
 export default async function OnboardingPage() {
   const user = await getCurrentUser()
@@ -20,6 +21,7 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <WelcomeModal />
       <div className="w-full max-w-4xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Selamat Datang di SAKU!</h1>
