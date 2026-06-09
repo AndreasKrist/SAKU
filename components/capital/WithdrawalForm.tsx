@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { formatDateForInput, formatRupiah } from '@/lib/utils'
-import { Calculator, TrendingUp, Wallet, ArrowRight } from 'lucide-react'
+import { Calculator, TrendingUp, Wallet, ArrowRight, CheckCircle2 } from 'lucide-react'
 
 const withdrawalSchema = z.object({
   amount: z.number().positive('Jumlah harus lebih dari 0'),
@@ -44,6 +44,7 @@ export function WithdrawalForm({
 }: WithdrawalFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [withdrawalResult, setWithdrawalResult] = useState<{ amount: number; remaining: number; date: string } | null>(null)
 
   const {
     register,
@@ -78,16 +79,45 @@ export function WithdrawalForm({
         toast.error(result.error)
       } else {
         toast.success('Penarikan berhasil dicatat!')
+        setWithdrawalResult({ amount: data.amount, remaining: currentBalance - data.amount, date: data.withdrawal_date })
         reset({
           withdrawal_date: formatDateForInput(new Date()),
         })
-        router.refresh()
       }
     } catch (error) {
       toast.error('Terjadi kesalahan')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (withdrawalResult) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-3 py-4">
+          <CheckCircle2 className="h-14 w-14 text-green-500 mx-auto" />
+          <h3 className="text-xl font-bold">Penarikan Berhasil!</h3>
+          <p className="text-sm text-muted-foreground">
+            {new Date(withdrawalResult.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 bg-red-50 rounded-lg border text-center">
+            <p className="text-sm text-muted-foreground mb-1">Ditarik</p>
+            <p className="text-xl font-bold text-red-600">-{formatRupiah(withdrawalResult.amount)}</p>
+          </div>
+          <div className="p-4 bg-purple-50 rounded-lg border text-center">
+            <p className="text-sm text-muted-foreground mb-1">Sisa Saldo</p>
+            <p className="text-xl font-bold text-purple-600">{formatRupiah(withdrawalResult.remaining)}</p>
+          </div>
+        </div>
+
+        <Button className="w-full" onClick={() => { setWithdrawalResult(null); router.refresh() }}>
+          Selesai
+        </Button>
+      </div>
+    )
   }
 
   return (

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { formatRupiah } from '@/lib/utils'
-import { Download, RefreshCw } from 'lucide-react'
+import { Download, RefreshCw, CheckCircle2, X } from 'lucide-react'
 import type { CapitalAccountsReport as CapitalAccountsReportType } from '@/types'
 
 interface CapitalAccountsReportProps {
@@ -16,6 +16,35 @@ interface CapitalAccountsReportProps {
 export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps) {
   const [loading, setLoading] = useState(false)
   const [report, setReport] = useState<CapitalAccountsReportType | null>(null)
+  const [downloadedFile, setDownloadedFile] = useState<{ format: string; date: string } | null>(null)
+
+  function downloadCSV() {
+    if (!report) return
+
+    const lines: string[] = []
+    lines.push('LAPORAN EKUITAS MITRA')
+    lines.push(`Per tanggal: ${new Date(report.period_end).toLocaleDateString('id-ID')}`)
+    lines.push('')
+    lines.push(`Total Ekuitas Bisnis,${report.total_capital}`)
+    lines.push('')
+    lines.push('Mitra,Ekuitas (%),Kontribusi,Laba,Penarikan,Saldo')
+    report.accounts.forEach((acc) => {
+      lines.push(`${acc.user_name},${acc.equity_percentage},${acc.total_contributions},${acc.total_profit_allocated},${acc.total_withdrawals},${acc.current_balance}`)
+    })
+
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `laporan-ekuitas-${report.period_end}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    toast.success('Laporan berhasil diunduh')
+    setDownloadedFile({ format: 'CSV', date: new Date(report.period_end).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) })
+  }
 
   async function generateReport() {
     setLoading(true)
@@ -68,12 +97,24 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                 <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={downloadCSV}>
                 <Download className="mr-2 h-4 w-4" />
-                Unduh
+                CSV
               </Button>
             </div>
           </CardHeader>
+          {downloadedFile && (
+            <div className="mx-6 mb-0 flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+              <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+              <div className="flex-1 text-sm text-green-800">
+                <span className="font-medium">File berhasil diunduh</span>
+                <p className="text-xs text-green-700">Format: {downloadedFile.format} • Per tanggal: {downloadedFile.date}</p>
+              </div>
+              <button type="button" onClick={() => setDownloadedFile(null)} className="text-green-600 hover:text-green-900">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <CardContent className="space-y-6">
             {/* Total Capital Summary */}
             <div className="bg-purple-50 p-6 rounded-lg">

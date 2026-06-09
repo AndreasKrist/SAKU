@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { formatRupiah, formatDateForInput, formatDate } from '@/lib/utils'
-import { Download, Building2, User, FileText } from 'lucide-react'
+import { Download, Building2, User, FileText, CheckCircle2, X } from 'lucide-react'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { CashFlowReport as CashFlowReportType } from '@/types'
@@ -23,6 +23,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
   const [loading, setLoading] = useState(false)
   const [report, setReport] = useState<CashFlowReportType | null>(null)
   const [showAllExpenses, setShowAllExpenses] = useState(false)
+  const [downloadedFile, setDownloadedFile] = useState<{ format: string; period: string } | null>(null)
 
   // Default to current month
   const now = new Date()
@@ -100,6 +101,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
     URL.revokeObjectURL(url)
 
     toast.success('Laporan berhasil diunduh')
+    setDownloadedFile({ format: 'CSV', period: `${new Date(periodStart).toLocaleDateString('id-ID')} – ${new Date(periodEnd).toLocaleDateString('id-ID')}` })
   }
 
   function downloadPDF() {
@@ -261,6 +263,7 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
     // Save
     doc.save(`laporan-arus-kas-${periodStart}-${periodEnd}.pdf`)
     toast.success('PDF berhasil diunduh')
+    setDownloadedFile({ format: 'PDF', period: `${new Date(periodStart).toLocaleDateString('id-ID')} – ${new Date(periodEnd).toLocaleDateString('id-ID')}` })
   }
 
   async function generateReport() {
@@ -372,6 +375,18 @@ export function CashFlowReport({ businessId }: CashFlowReportProps) {
               </Button>
             </div>
           </CardHeader>
+          {downloadedFile && (
+            <div className="mx-6 mb-0 flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+              <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+              <div className="flex-1 text-sm text-green-800">
+                <span className="font-medium">File berhasil diunduh</span>
+                <p className="text-xs text-green-700">Format: {downloadedFile.format} • Periode: {downloadedFile.period}</p>
+              </div>
+              <button type="button" onClick={() => setDownloadedFile(null)} className="text-green-600 hover:text-green-900">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <CardContent className="space-y-6">
             {/* Opening Balance */}
             <div className="bg-blue-50 p-3 sm:p-4 rounded-lg">

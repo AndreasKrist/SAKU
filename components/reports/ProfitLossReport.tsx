@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { formatRupiah, formatDateForInput } from '@/lib/utils'
-import { Download, FileText } from 'lucide-react'
+import { Download, FileText, CheckCircle2, X } from 'lucide-react'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { ProfitLossReport as ProfitLossReportType } from '@/types'
@@ -20,6 +20,7 @@ interface ProfitLossReportProps {
 export function ProfitLossReport({ businessId }: ProfitLossReportProps) {
   const [loading, setLoading] = useState(false)
   const [report, setReport] = useState<ProfitLossReportType | null>(null)
+  const [downloadedFile, setDownloadedFile] = useState<{ format: string; period: string } | null>(null)
 
   // Default to current month
   const now = new Date()
@@ -75,6 +76,7 @@ export function ProfitLossReport({ businessId }: ProfitLossReportProps) {
     URL.revokeObjectURL(url)
 
     toast.success('Laporan berhasil diunduh')
+    setDownloadedFile({ format: 'CSV', period: `${new Date(periodStart).toLocaleDateString('id-ID')} – ${new Date(periodEnd).toLocaleDateString('id-ID')}` })
   }
 
   function downloadPDF() {
@@ -159,6 +161,7 @@ export function ProfitLossReport({ businessId }: ProfitLossReportProps) {
     // Save
     doc.save(`laporan-laba-rugi-${periodStart}-${periodEnd}.pdf`)
     toast.success('PDF berhasil diunduh')
+    setDownloadedFile({ format: 'PDF', period: `${new Date(periodStart).toLocaleDateString('id-ID')} – ${new Date(periodEnd).toLocaleDateString('id-ID')}` })
   }
 
   async function generateReport() {
@@ -250,6 +253,18 @@ export function ProfitLossReport({ businessId }: ProfitLossReportProps) {
               </Button>
             </div>
           </CardHeader>
+          {downloadedFile && (
+            <div className="mx-6 mb-0 flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+              <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+              <div className="flex-1 text-sm text-green-800">
+                <span className="font-medium">File berhasil diunduh</span>
+                <p className="text-xs text-green-700">Format: {downloadedFile.format} • Periode: {downloadedFile.period}</p>
+              </div>
+              <button type="button" onClick={() => setDownloadedFile(null)} className="text-green-600 hover:text-green-900">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <CardContent className="space-y-6">
             {/* Revenue Section */}
             <div>

@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { formatDateForInput, formatRupiah } from '@/lib/utils'
-import { Users, Calculator, Percent, CheckCircle } from 'lucide-react'
+import { Users, Calculator, Percent, CheckCircle, CheckCircle2 } from 'lucide-react'
 import type { PartnerCapitalAccount } from '@/types'
 
 interface GroupWithdrawalFormProps {
@@ -29,6 +29,12 @@ export function GroupWithdrawalForm({
   const [percentage, setPercentage] = useState(50)
   const [withdrawalDate, setWithdrawalDate] = useState(formatDateForInput(new Date()))
   const [notes, setNotes] = useState('')
+  const [withdrawalResult, setWithdrawalResult] = useState<{
+    percentage: number
+    totalWithdrawal: number
+    date: string
+    preview: { user_name: string; withdrawal_amount: number; remaining_balance: number }[]
+  } | null>(null)
 
   // Filter accounts with positive balance
   const eligibleAccounts = accounts.filter((acc) => acc.current_balance > 0)
@@ -76,15 +82,56 @@ export function GroupWithdrawalForm({
         toast.error(result.error)
       } else {
         toast.success(`Penarikan bersama ${percentage}% berhasil dicatat untuk ${result.count} mitra!`)
+        setWithdrawalResult({
+          percentage,
+          totalWithdrawal,
+          date: withdrawalDate,
+          preview: withdrawalPreview.map((a) => ({ user_name: a.user_name, withdrawal_amount: a.withdrawal_amount, remaining_balance: a.remaining_balance })),
+        })
         setPercentage(50)
         setNotes('')
-        router.refresh()
       }
     } catch (error) {
       toast.error('Terjadi kesalahan')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (withdrawalResult) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-3 py-4">
+          <CheckCircle2 className="h-14 w-14 text-green-500 mx-auto" />
+          <h3 className="text-xl font-bold">Penarikan Bersama Berhasil!</h3>
+          <p className="text-sm text-muted-foreground">
+            {withdrawalResult.percentage}% dari saldo ekuitas • {new Date(withdrawalResult.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+
+        <div className="p-4 bg-gray-50 rounded-lg border text-center">
+          <p className="text-sm text-muted-foreground mb-1">Total Ditarik</p>
+          <p className="text-2xl font-bold text-red-600">{formatRupiah(withdrawalResult.totalWithdrawal)}</p>
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Rincian Per Mitra</h4>
+          {withdrawalResult.preview.map((a, i) => (
+            <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-white">
+              <div>
+                <p className="font-medium">{a.user_name}</p>
+                <p className="text-xs text-muted-foreground">Sisa saldo: {formatRupiah(a.remaining_balance)}</p>
+              </div>
+              <p className="font-semibold text-red-600">-{formatRupiah(a.withdrawal_amount)}</p>
+            </div>
+          ))}
+        </div>
+
+        <Button className="w-full" onClick={() => { setWithdrawalResult(null); router.refresh() }}>
+          Selesai
+        </Button>
+      </div>
+    )
   }
 
   if (!isOwner) {

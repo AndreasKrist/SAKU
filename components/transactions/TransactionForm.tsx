@@ -18,9 +18,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { formatDateForInput } from '@/lib/utils'
+import { formatDateForInput, formatRupiah } from '@/lib/utils'
 import type { TransactionCategory, BusinessMemberWithProfile } from '@/types'
 import { QUANTITY_UNITS } from '@/types'
+import { CheckCircle2, X } from 'lucide-react'
 
 const transactionSchema = z.object({
   type: z.enum(['revenue', 'expense']),
@@ -50,6 +51,7 @@ export function TransactionForm({
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [transactionType, setTransactionType] = useState<'revenue' | 'expense'>('expense')
+  const [lastAdded, setLastAdded] = useState<{ type: 'revenue' | 'expense'; amount: number; date: string } | null>(null)
 
   const {
     register,
@@ -80,6 +82,7 @@ export function TransactionForm({
         toast.error(result.error)
       } else {
         toast.success('Transaksi berhasil ditambahkan!')
+        setLastAdded({ type: data.type, amount: data.amount, date: data.transaction_date })
         reset({
           type: 'expense',
           payment_source: 'business',
@@ -98,6 +101,20 @@ export function TransactionForm({
   const filteredCategories = categories.filter((cat) => cat.type === selectedType)
 
   return (
+    <div className="space-y-4">
+    {lastAdded && (
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200 text-green-800">
+        <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
+        <span className="text-sm flex-1">
+          <strong>{lastAdded.type === 'revenue' ? 'Pendapatan' : 'Pengeluaran'}</strong>{' '}
+          {formatRupiah(lastAdded.amount)} berhasil dicatat pada{' '}
+          {new Date(lastAdded.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </span>
+        <button type="button" onClick={() => setLastAdded(null)} className="text-green-600 hover:text-green-900">
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    )}
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         {/* Type */}
@@ -303,5 +320,6 @@ export function TransactionForm({
         </Button>
       </div>
     </form>
+    </div>
   )
 }

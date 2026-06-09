@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { formatDateForInput, formatRupiah } from '@/lib/utils'
 import type { BusinessMemberWithProfile } from '@/types'
+import { CheckCircle2 } from 'lucide-react'
 
 const distributionSchema = z
   .object({
@@ -46,6 +47,14 @@ export function ProfitDistributionForm({
     total_profit: number
     distributed_amount: number
     allocations: { member_name: string; equity: number; amount: number }[]
+  } | null>(null)
+  const [distributionResult, setDistributionResult] = useState<{
+    total_profit: number
+    distributed_amount: number
+    allocations: { member_name: string; equity: number; amount: number }[]
+    period_start: string
+    period_end: string
+    percentage: number
   } | null>(null)
 
   const {
@@ -109,14 +118,68 @@ export function ProfitDistributionForm({
         toast.error(result.error)
       } else {
         toast.success('Laba berhasil didistribusikan!')
+        setDistributionResult({
+          ...preview!,
+          period_start: data.period_start,
+          period_end: data.period_end,
+          percentage: data.distribution_percentage,
+        })
         setPreview(null)
-        router.refresh()
       }
     } catch (error) {
       toast.error('Terjadi kesalahan')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (distributionResult) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-3 py-4">
+          <CheckCircle2 className="h-14 w-14 text-green-500 mx-auto" />
+          <h3 className="text-xl font-bold">Distribusi Laba Berhasil!</h3>
+          <p className="text-sm text-muted-foreground">
+            Periode {new Date(distributionResult.period_start).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {' – '}
+            {new Date(distributionResult.period_end).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-gray-50 p-4 rounded-lg border text-center">
+            <p className="text-sm text-muted-foreground mb-1">Total Laba Bersih</p>
+            <p className="text-xl font-bold text-green-600">{formatRupiah(distributionResult.total_profit)}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg border text-center">
+            <p className="text-sm text-muted-foreground mb-1">Didistribusikan ({distributionResult.percentage}%)</p>
+            <p className="text-xl font-bold text-blue-600">{formatRupiah(distributionResult.distributed_amount)}</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Diterima Per Mitra</h4>
+          {distributionResult.allocations.map((a, i) => (
+            <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-white">
+              <div>
+                <p className="font-medium">{a.member_name}</p>
+                <p className="text-xs text-muted-foreground">Ekuitas {a.equity}%</p>
+              </div>
+              <p className="font-semibold text-blue-600">{formatRupiah(a.amount)}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <Button variant="outline" className="flex-1" onClick={() => { setDistributionResult(null); router.refresh() }}>
+            Distribusi Lagi
+          </Button>
+          <Button className="flex-1" onClick={() => router.push(`/bisnis/${businessId}/laporan`)}>
+            Lihat Laporan →
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (

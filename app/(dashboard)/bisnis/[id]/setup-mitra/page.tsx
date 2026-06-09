@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { Users } from 'lucide-react'
+import { Users, CheckCircle2 } from 'lucide-react'
 import { splitEquityEvenly } from '@/lib/actions/equity'
 import { AutoUpdateEquityToggle } from '@/components/business/AutoUpdateEquityToggle'
 
@@ -29,6 +29,7 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
   const [distributions, setDistributions] = useState<{ [userId: string]: number }>({})
   const [total, setTotal] = useState(0)
   const [autoUpdateEnabled, setAutoUpdateEnabled] = useState(true)
+  const [savedDistributions, setSavedDistributions] = useState<{ name: string; percentage: number }[] | null>(null)
 
   useEffect(() => {
     fetchMembers()
@@ -87,7 +88,11 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
       }
 
       toast.success(`Ekuitas dibagi rata: ${result.distributions?.length} anggota @ ${result.distributions?.[0]?.percentage}%`)
-      router.push(`/bisnis/${params.id}`)
+      const saved = members.map((m) => ({
+        name: m.profile?.full_name || 'Unknown',
+        percentage: result.distributions?.[0]?.percentage ?? (100 / members.length),
+      }))
+      setSavedDistributions(saved)
       router.refresh()
     } catch (error: any) {
       toast.error(error.message || 'Terjadi kesalahan')
@@ -124,7 +129,11 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
       }
 
       toast.success('Distribusi ekuitas berhasil diperbarui!')
-      router.push(`/bisnis/${params.id}`)
+      const saved = members.map((m) => ({
+        name: m.profile?.full_name || 'Unknown',
+        percentage: distributions[m.user_id] ?? 0,
+      }))
+      setSavedDistributions(saved)
       router.refresh()
     } catch (error: any) {
       toast.error(error.message || 'Terjadi kesalahan')
@@ -137,6 +146,41 @@ export default function SetupMitraPage({ params }: { params: { id: string } }) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <p>Memuat...</p>
+      </div>
+    )
+  }
+
+  if (savedDistributions) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <Card>
+          <CardContent className="pt-8 pb-8 space-y-6">
+            <div className="text-center space-y-3">
+              <CheckCircle2 className="h-14 w-14 text-green-500 mx-auto" />
+              <h3 className="text-xl font-bold">Setup Ekuitas Selesai!</h3>
+              <p className="text-sm text-muted-foreground">Distribusi ekuitas mitra berhasil disimpan.</p>
+            </div>
+
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Pembagian Ekuitas</h4>
+              {savedDistributions.map((d, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-stone-50">
+                  <p className="font-medium">{d.name}</p>
+                  <p className="font-bold text-stone-700">{d.percentage.toFixed(2)}%</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1" onClick={() => setSavedDistributions(null)}>
+                Ubah Lagi
+              </Button>
+              <Button className="flex-1" onClick={() => router.push(`/bisnis/${params.id}`)}>
+                Kembali ke Bisnis →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
