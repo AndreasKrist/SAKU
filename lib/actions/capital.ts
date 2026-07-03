@@ -19,16 +19,16 @@ export async function createCapitalContribution(
     return { error: 'Tidak terautentikasi' }
   }
 
-  // Verify user is member of business
+  // Only owners can create manual capital contributions because this can change equity.
   const { data: member } = await supabase
     .from('business_members')
-    .select('id')
+    .select('role')
     .eq('business_id', businessId)
     .eq('user_id', user.id)
     .single()
 
-  if (!member) {
-    return { error: 'Anda bukan anggota bisnis ini' }
+  if (!member || member.role !== 'owner') {
+    return { error: 'Hanya pemilik yang dapat mencatat kontribusi modal manual' }
   }
 
   // Create capital contribution
@@ -41,7 +41,6 @@ export async function createCapitalContribution(
       type: formData.type,
       notes: formData.notes || null,
       contribution_date: formData.contribution_date,
-      created_by: user.id,
     })
     .select()
     .single()
@@ -120,35 +119,16 @@ export async function createWithdrawal(
     return { error: 'Anda bukan anggota bisnis ini' }
   }
 
-  // Calculate user's profit balance from transactions (same as UI)
-  // Get all transactions to calculate total profit
-  const { data: transactions } = await supabase
-    .from('transactions')
-    .select('type, amount')
-    .eq('business_id', businessId)
+  const { autoDistributePendingProfits } = await import('./profit')
+  const distributionResult = await autoDistributePendingProfits(businessId)
 
-  let totalRevenue = 0
-  let totalExpense = 0
-  transactions?.forEach((t) => {
-    const amount = Number(t.amount)
-    if (t.type === 'revenue') {
-      totalRevenue += amount
-    } else {
-      totalExpense += amount
-    }
-  })
-  const totalBusinessProfit = totalRevenue - totalExpense
+  if (distributionResult.error) {
+    return { error: distributionResult.error }
+  }
 
-  // Get user's equity percentage
-  const { data: memberData } = await supabase
-    .from('business_members')
-    .select('equity_percentage')
-    .eq('business_id', businessId)
-    .eq('user_id', user.id)
-    .single()
-
-  const equityPercentage = Number(memberData?.equity_percentage || 0)
-  const userProfitShare = totalBusinessProfit * (equityPercentage / 100)
+  const { getProfitAllocationTotals } = await import('@/lib/supabase/queries')
+  const profitAllocationTotals = await getProfitAllocationTotals(businessId)
+  const userProfitShare = profitAllocationTotals[user.id] || 0
 
   // Get existing withdrawals
   const { data: withdrawals } = await supabase
@@ -207,7 +187,7 @@ export async function createWithdrawal(
     details: {
       withdrawal_id: withdrawal.id,
       amount: formData.amount,
-      description: `Penarikan modal sebesar Rp ${formData.amount.toLocaleString('id-ID')}`,
+      description: `Penarikan laba sebesar Rp ${formData.amount.toLocaleString('id-ID')}`,
     },
   })
 
@@ -325,26 +305,22 @@ export async function createGroupWithdrawal(
   // Get all members
   const { data: members } = await supabase
     .from('business_members')
-    .select('user_id, equity_percentage')
+    .select('user_id')
     .eq('business_id', businessId)
 
   if (!members || members.length === 0) {
     return { error: 'Tidak ada mitra ditemukan' }
   }
 
-  // Get transactions for profit calculation
-  const { data: transactions } = await supabase
-    .from('transactions')
-    .select('type, amount')
-    .eq('business_id', businessId)
+  const { autoDistributePendingProfits } = await import('./profit')
+  const distributionResult = await autoDistributePendingProfits(businessId)
 
-  let totalRevenue = 0
-  let totalExpense = 0
-  transactions?.forEach((t) => {
-    if (t.type === 'revenue') totalRevenue += Number(t.amount)
-    else totalExpense += Number(t.amount)
-  })
-  const totalProfit = totalRevenue - totalExpense
+  if (distributionResult.error) {
+    return { error: distributionResult.error }
+  }
+
+  const { getProfitAllocationTotals } = await import('@/lib/supabase/queries')
+  const profitAllocationTotals = await getProfitAllocationTotals(businessId)
 
   // Get existing withdrawals
   const { data: withdrawals } = await supabase
@@ -363,8 +339,8 @@ export async function createGroupWithdrawal(
   }> = []
 
   for (const m of members) {
-    // Only profit can be withdrawn (contributions are permanent equity)
-    const profitShare = totalProfit * (Number(m.equity_percentage) / 100)
+    // Only posted profit allocations can be withdrawn.
+    const profitShare = profitAllocationTotals[m.user_id] || 0
     const userWithdraws = withdrawals?.filter((w) => w.user_id === m.user_id).reduce((sum, w) => sum + Number(w.amount), 0) || 0
     const withdrawableBalance = profitShare - userWithdraws
     const amount = Math.floor(withdrawableBalance * (formData.percentage / 100))
@@ -438,7 +414,7 @@ export async function deleteWithdrawal(withdrawalId: string, businessId: string)
     .single()
 
   if (!member || member.role !== 'owner') {
-    return { error: 'Hanya pemilik yang dapat menghapus penarikan modal' }
+    return { error: 'Hanya pemilik yang dapat menghapus penarikan laba' }
   }
 
   // Delete withdrawal
@@ -460,7 +436,7 @@ export async function deleteWithdrawal(withdrawalId: string, businessId: string)
     entity_id: withdrawalId,
     details: {
       withdrawal_id: withdrawalId,
-      description: 'Penarikan modal dihapus',
+      description: 'Penarikan laba dihapus',
     },
   })
 

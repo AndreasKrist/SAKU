@@ -109,17 +109,27 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
         </TabsList>
 
         <TabsContent value="contributions" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Tambah Kontribusi Modal</CardTitle>
-              <CardDescription>
-                Catat kontribusi modal dari mitra bisnis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ContributionForm businessId={params.id} members={members} />
-            </CardContent>
-          </Card>
+          {userMember.role === 'owner' ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Tambah Kontribusi Modal</CardTitle>
+                <CardDescription>
+                  Catat kontribusi modal dari mitra bisnis
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ContributionForm businessId={params.id} members={members} />
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-orange-200 bg-orange-50">
+              <CardContent className="pt-6">
+                <p className="text-orange-900">
+                  Hanya pemilik bisnis yang dapat mencatat kontribusi modal manual.
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>
@@ -202,7 +212,7 @@ export default async function ModalPage({ params }: { params: { id: string } }) 
                             ? 'contribution' in item && item.type === 'initial'
                               ? 'Modal Awal'
                               : 'Tambahan Modal'
-                            : 'Penarikan Modal'}
+                            : 'Penarikan Laba'}
                         </p>
                         {item.notes && (
                           <p className="text-xs text-muted-foreground mt-1">

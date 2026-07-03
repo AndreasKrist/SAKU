@@ -105,7 +105,7 @@ export function GroupWithdrawalForm({
           <CheckCircle2 className="h-14 w-14 text-green-500 mx-auto" />
           <h3 className="text-xl font-bold">Penarikan Bersama Berhasil!</h3>
           <p className="text-sm text-muted-foreground">
-            {withdrawalResult.percentage}% dari saldo ekuitas • {new Date(withdrawalResult.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+            {withdrawalResult.percentage}% dari saldo laba • {new Date(withdrawalResult.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
 
@@ -152,8 +152,8 @@ export function GroupWithdrawalForm({
           <p className="font-medium text-stone-800">Penarikan Bersama</p>
         </div>
         <p className="text-sm text-stone-600">
-          Tarik ekuitas untuk semua mitra sekaligus dengan persentase yang sama.
-          Setiap mitra akan mendapat bagian sesuai saldo ekuitas masing-masing.
+          Tarik laba untuk semua mitra sekaligus dengan persentase yang sama.
+          Setiap mitra akan mendapat bagian sesuai saldo laba masing-masing.
         </p>
       </div>
 

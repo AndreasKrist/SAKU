@@ -156,8 +156,74 @@ export async function getCapitalContributions(
 // PARTNER CAPITAL ACCOUNT CALCULATION
 // =====================================================
 
+export async function getProfitAllocationTotals(
+  businessId: string
+): Promise<Record<string, number>> {
+  const supabase = await createClient()
+
+  const { data: distributions, error } = await supabase
+    .from('profit_distributions')
+    .select(`
+      allocations:profit_allocations(
+        user_id,
+        allocated_amount
+      )
+    `)
+    .eq('business_id', businessId)
+
+  if (error) throw error
+
+  const totals: Record<string, number> = {}
+
+  distributions?.forEach((distribution: any) => {
+    distribution.allocations?.forEach((allocation: any) => {
+      totals[allocation.user_id] =
+        (totals[allocation.user_id] || 0) + Number(allocation.allocated_amount)
+    })
+  })
+
+  return totals
+}
+
+export async function getTotalBusinessProfit(businessId: string): Promise<number> {
+  const supabase = await createClient()
+
+  const { data: transactions, error } = await supabase
+    .from('transactions')
+    .select('type, amount')
+    .eq('business_id', businessId)
+
+  if (error) throw error
+
+  return (
+    transactions?.reduce((sum, transaction) => {
+      const amount = Number(transaction.amount)
+      return sum + (transaction.type === 'revenue' ? amount : -amount)
+    }, 0) || 0
+  )
+}
+
+export async function getTotalDistributedProfit(businessId: string): Promise<number> {
+  const supabase = await createClient()
+
+  const { data: distributions, error } = await supabase
+    .from('profit_distributions')
+    .select('distributed_amount')
+    .eq('business_id', businessId)
+
+  if (error) throw error
+
+  return (
+    distributions?.reduce(
+      (sum, distribution) => sum + Number(distribution.distributed_amount),
+      0
+    ) || 0
+  )
+}
+
 // Cache capital accounts for request duration
-// Calculates profit share from transactions directly (not from profit_allocations)
+// Withdrawable profit includes posted allocations plus current undistributed
+// profit as a live preview. Actual withdrawals lock the preview into allocations.
 export const getPartnerCapitalAccounts = cache(
   async (businessId: string): Promise<PartnerCapitalAccount[]> => {
     const supabase = await createClient()
@@ -178,26 +244,10 @@ export const getPartnerCapitalAccounts = cache(
 
     if (contributionsError) throw contributionsError
 
-    // Get all transactions to calculate total profit
-    const { data: transactions, error: transactionsError } = await supabase
-      .from('transactions')
-      .select('type, amount')
-      .eq('business_id', businessId)
-
-    if (transactionsError) throw transactionsError
-
-    // Calculate total profit from transactions
-    let totalRevenue = 0
-    let totalExpense = 0
-    transactions?.forEach((t) => {
-      const amount = Number(t.amount)
-      if (t.type === 'revenue') {
-        totalRevenue += amount
-      } else {
-        totalExpense += amount
-      }
-    })
-    const totalBusinessProfit = totalRevenue - totalExpense
+    const profitAllocationTotals = await getProfitAllocationTotals(businessId)
+    const totalBusinessProfit = await getTotalBusinessProfit(businessId)
+    const totalDistributedProfit = await getTotalDistributedProfit(businessId)
+    const pendingProfit = Math.max(totalBusinessProfit - totalDistributedProfit, 0)
 
     // Get all withdrawals
     const { data: withdrawals, error: withdrawalsError } = await supabase
@@ -213,9 +263,10 @@ export const getPartnerCapitalAccounts = cache(
         .filter((c) => c.user_id === member.user_id)
         .reduce((sum, c) => sum + Number(c.amount), 0)
 
-      // Calculate profit share based on equity percentage
       const equityPercentage = Number(member.equity_percentage)
-      const totalProfitAllocated = totalBusinessProfit * (equityPercentage / 100)
+      const pendingProfitShare = pendingProfit * (equityPercentage / 100)
+      const totalProfitAllocated =
+        (profitAllocationTotals[member.user_id] || 0) + pendingProfitShare
 
       const totalWithdrawals = withdrawals
         .filter((w) => w.user_id === member.user_id)

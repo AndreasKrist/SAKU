@@ -25,9 +25,9 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
     lines.push('LAPORAN EKUITAS MITRA')
     lines.push(`Per tanggal: ${new Date(report.period_end).toLocaleDateString('id-ID')}`)
     lines.push('')
-    lines.push(`Total Ekuitas Bisnis,${report.total_capital}`)
+    lines.push(`Total Saldo Laba Tersedia,${report.total_capital}`)
     lines.push('')
-    lines.push('Mitra,Ekuitas (%),Kontribusi,Laba,Penarikan,Saldo')
+    lines.push('Mitra,Ekuitas (%),Kontribusi,Hak Laba,Penarikan,Saldo Laba')
     report.accounts.forEach((acc) => {
       lines.push(`${acc.user_name},${acc.equity_percentage},${acc.total_contributions},${acc.total_profit_allocated},${acc.total_withdrawals},${acc.current_balance}`)
     })
@@ -119,7 +119,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
             {/* Total Capital Summary */}
             <div className="bg-purple-50 p-6 rounded-lg">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">Total Ekuitas Bisnis</p>
+                <p className="text-sm text-muted-foreground mb-2">Total Saldo Laba Tersedia</p>
                 <p className="text-4xl font-bold text-purple-600">
                   {formatRupiah(report.total_capital)}
                 </p>
@@ -142,7 +142,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground mb-1">Saldo Ekuitas</p>
+                      <p className="text-xs text-muted-foreground mb-1">Saldo Laba</p>
                       <p className="text-2xl font-bold text-purple-600">
                         {formatRupiah(account.current_balance)}
                       </p>
@@ -158,7 +158,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                       </p>
                     </div>
                     <div className="bg-blue-50 p-3 rounded text-center">
-                      <p className="text-xs text-muted-foreground mb-1">Laba</p>
+                      <p className="text-xs text-muted-foreground mb-1">Hak Laba</p>
                       <p className="font-semibold text-blue-600">
                         {formatRupiah(account.total_profit_allocated)}
                       </p>
@@ -174,11 +174,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                   {/* Formula */}
                   <div className="mt-4 p-3 bg-gray-50 rounded text-sm">
                     <p className="text-muted-foreground">
-                      Saldo ={' '}
-                      <span className="text-green-600">
-                        {formatRupiah(account.total_contributions)}
-                      </span>{' '}
-                      +{' '}
+                      Saldo laba ={' '}
                       <span className="text-blue-600">
                         {formatRupiah(account.total_profit_allocated)}
                       </span>{' '}
@@ -209,7 +205,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                 </p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Total Laba</p>
+                <p className="text-sm text-muted-foreground mb-1">Total Hak Laba</p>
                 <p className="text-lg font-bold text-blue-600">
                   {formatRupiah(
                     report.accounts.reduce(
@@ -228,7 +224,7 @@ export function CapitalAccountsReport({ businessId }: CapitalAccountsReportProps
                 </p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Total Ekuitas</p>
+                <p className="text-sm text-muted-foreground mb-1">Saldo Laba</p>
                 <p className="text-lg font-bold text-purple-600">
                   {formatRupiah(report.total_capital)}
                 </p>

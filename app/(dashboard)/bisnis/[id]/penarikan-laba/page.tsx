@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { WithdrawalForm } from '@/components/capital/WithdrawalForm'
 import { GroupWithdrawalForm } from '@/components/capital/GroupWithdrawalForm'
 import { formatRupiah, formatDate } from '@/lib/utils'
-import { TrendingUp, Wallet, DollarSign, Banknote, ArrowDown } from 'lucide-react'
+import { TrendingUp, Wallet, Banknote, ArrowDown } from 'lucide-react'
 import { PageTip } from '@/components/onboarding/PageTip'
 
 export default async function PenarikanLabaPage({ params }: { params: { id: string } }) {
@@ -52,8 +52,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
     0
   )
 
-  // Saldo Laba Tersedia = Total Kontribusi + Total Laba - Total Penarikan
-  // (sama seperti di Modal & Ekuitas)
+  // Saldo laba tersedia = hak laba berjalan - penarikan
   const availableProfit = capitalAccounts.reduce(
     (sum, acc) => sum + acc.current_balance,
     0
@@ -102,13 +101,13 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Penarikan Laba</h1>
         <p className="text-sm md:text-base text-muted-foreground mt-1">
-          Tarik bagian modal dan laba Anda dari bisnis
+          Tarik hak laba mitra berdasarkan saldo berjalan
         </p>
       </div>
 
       <PageTip
         tipKey="penarikan-laba"
-        message="Yang bisa ditarik hanya laba yang sudah didistribusikan — bukan kontribusi modal (itu adalah kepemilikan). Gunakan 'Tarik Bersama' jika ingin menarik laba semua mitra sekaligus (khusus pemilik)."
+        message="Yang bisa ditarik hanya laba, bukan kontribusi modal. Saat penarikan dibuat, sistem otomatis mengunci pembagian laba saat itu agar perubahan ekuitas berikutnya tidak mengubah hak laba lama."
       />
 
       {/* Metrics Grid */}
@@ -188,7 +187,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
               {formatRupiah(availableProfit)}
             </div>
             <p className="text-xs text-purple-700 mt-2 font-medium">
-              Total Laba mitra yang bisa ditarik
+              Total hak laba mitra yang bisa ditarik
             </p>
           </CardContent>
         </Card>
@@ -232,7 +231,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
                     </p>
                   </div>
                   <div className="text-center flex sm:block items-center justify-between p-2 bg-blue-50 rounded">
-                    <p className="text-xs text-muted-foreground sm:mb-1">Laba</p>
+                    <p className="text-xs text-muted-foreground sm:mb-1">Hak Laba</p>
                     <p className="font-semibold text-blue-600 text-xs sm:text-sm">
                       {formatRupiah(account.total_profit_allocated)}
                     </p>
@@ -262,7 +261,7 @@ export default async function PenarikanLabaPage({ params }: { params: { id: stri
             <CardHeader>
               <CardTitle>Tarik Bagian Laba Anda</CardTitle>
               <CardDescription>
-                Tarik sebagian dari saldo modal Anda (kontribusi + laba yang sudah dialokasikan)
+                Tarik sebagian dari hak laba berjalan Anda
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -254,7 +254,7 @@ export function DashboardStats({
         <Card className="relative overflow-hidden border-0 shadow-md">
           <div className="absolute top-0 right-0 w-16 sm:w-24 h-16 sm:h-24 bg-gradient-to-bl from-violet-500/20 to-transparent rounded-bl-full" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 sm:p-4 pb-1 sm:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Laba Ditarik</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Saldo Laba</CardTitle>
             <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-violet-100">
               <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600" />
             </div>

@@ -68,7 +68,7 @@ export default async function DistribusiLabaPage({ params }: { params: { id: str
             <li>Pilih periode untuk menghitung laba bersih</li>
             <li>Tentukan persentase laba yang akan didistribusikan (0-100%)</li>
             <li>Laba akan dibagi secara otomatis sesuai persentase ekuitas masing-masing mitra</li>
-            <li>Hasil distribusi akan masuk ke saldo modal mitra</li>
+            <li>Hasil distribusi akan masuk ke saldo laba mitra</li>
           </ul>
         </CardContent>
       </Card>

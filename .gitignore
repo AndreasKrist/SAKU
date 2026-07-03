@@ -29,6 +29,10 @@ yarn-error.log*
 .env*.local
 .env
 
+# local seed/test data
+scripts/*.local.txt
+scripts/*.local.csv
+
 # vercel
 .vercel
 

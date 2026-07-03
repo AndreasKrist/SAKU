@@ -5,6 +5,129 @@ import { revalidatePath } from 'next/cache'
 import { TransactionFormData } from '@/types'
 import { logActivity } from './activity'
 
+function isPartnerPaidExpense(formData: TransactionFormData) {
+  return (
+    formData.type === 'expense' &&
+    formData.payment_source !== 'business' &&
+    Boolean(formData.payment_source)
+  )
+}
+
+async function autoUpdateEquityIfEnabled(supabase: any, businessId: string) {
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('auto_update_equity_on_contribution')
+    .eq('id', businessId)
+    .single()
+
+  const shouldAutoUpdate = business?.auto_update_equity_on_contribution !== false
+
+  if (!shouldAutoUpdate) return
+
+  const { applyEquityFromContributions } = await import('./equity')
+  const equityResult = await applyEquityFromContributions(businessId, {
+    skipOwnerCheck: true,
+  })
+
+  if (!equityResult.error) {
+    console.log('[Auto-Update] Equity updated after personal expense contribution')
+  } else {
+    console.error('[Auto-Update] Failed to update equity:', equityResult.error)
+  }
+}
+
+async function syncAutoContributionForTransaction(
+  supabase: any,
+  businessId: string,
+  transactionId: string,
+  formData: TransactionFormData
+) {
+  await deleteAutoContributionForTransaction(supabase, businessId, {
+    id: transactionId,
+    type: formData.type,
+    payment_source: formData.payment_source,
+    paid_by_user_id: formData.payment_source !== 'business' ? formData.payment_source : null,
+    amount: formData.amount,
+    item_name: formData.item_name || null,
+    transaction_date: formData.transaction_date,
+  })
+
+  if (!isPartnerPaidExpense(formData)) return { changed: true }
+
+  const { error } = await supabase.from('capital_contributions').insert({
+    business_id: businessId,
+    user_id: formData.payment_source,
+    amount: formData.amount,
+    type: 'from_expense',
+    source_transaction_id: transactionId,
+    notes: `Otomatis dari pengeluaran: ${formData.item_name || 'transaksi'} (dibayar uang pribadi)`,
+    contribution_date: formData.transaction_date,
+  })
+
+  if (error) return { error: error.message }
+
+  return { changed: true }
+}
+
+async function deleteAutoContributionForTransaction(
+  supabase: any,
+  businessId: string,
+  transaction: {
+    id: string
+    type: string
+    payment_source: string
+    paid_by_user_id: string | null
+    amount: number | string
+    item_name: string | null
+    transaction_date: string
+  }
+) {
+  const { error: linkedDeleteError } = await supabase
+    .from('capital_contributions')
+    .delete()
+    .eq('business_id', businessId)
+    .eq('source_transaction_id', transaction.id)
+
+  if (linkedDeleteError) return { error: linkedDeleteError.message }
+
+  const paidByUserId =
+    transaction.payment_source !== 'business'
+      ? transaction.payment_source
+      : transaction.paid_by_user_id
+
+  if (transaction.type !== 'expense' || !paidByUserId) {
+    return { success: true }
+  }
+
+  const legacyAutoNote = `Otomatis dari pengeluaran: ${transaction.item_name || 'transaksi'} (dibayar uang pribadi)`
+
+  const { data: legacyContributions, error: legacyFindError } = await supabase
+    .from('capital_contributions')
+    .select('id')
+    .eq('business_id', businessId)
+    .eq('user_id', paidByUserId)
+    .eq('amount', Number(transaction.amount))
+    .eq('type', 'additional')
+    .is('source_transaction_id', null)
+    .eq('contribution_date', transaction.transaction_date)
+    .eq('notes', legacyAutoNote)
+
+  if (legacyFindError) return { error: legacyFindError.message }
+
+  const legacyIds = legacyContributions?.map((c: { id: string }) => c.id) || []
+
+  if (legacyIds.length === 0) return { success: true }
+
+  const { error: legacyDeleteError } = await supabase
+    .from('capital_contributions')
+    .delete()
+    .in('id', legacyIds)
+
+  if (legacyDeleteError) return { error: legacyDeleteError.message }
+
+  return { success: true }
+}
+
 export async function createTransaction(
   businessId: string,
   formData: TransactionFormData
@@ -22,13 +145,21 @@ export async function createTransaction(
   // Verify user is member of business
   const { data: member } = await supabase
     .from('business_members')
-    .select('id')
+    .select('role')
     .eq('business_id', businessId)
     .eq('user_id', user.id)
     .single()
 
   if (!member) {
     return { error: 'Anda bukan anggota bisnis ini' }
+  }
+
+  if (
+    isPartnerPaidExpense(formData) &&
+    member.role !== 'owner' &&
+    formData.payment_source !== user.id
+  ) {
+    return { error: 'Anda hanya dapat mencatat pengeluaran pribadi atas nama sendiri' }
   }
 
   // Validate business cash if expense is paid from business
@@ -72,26 +203,17 @@ export async function createTransaction(
 
   // CRITICAL: If expense paid by partner (not business), auto-create capital contribution
   // This increases their equity percentage automatically
-  if (
-    formData.type === 'expense' &&
-    formData.payment_source !== 'business' &&
-    formData.payment_source
-  ) {
-    const { error: capitalError } = await supabase
-      .from('capital_contributions')
-      .insert({
-        business_id: businessId,
-        user_id: formData.payment_source,
-        amount: formData.amount,
-        type: 'additional',
-        notes: `Otomatis dari pengeluaran: ${formData.item_name || 'transaksi'} (dibayar uang pribadi)`,
-        contribution_date: formData.transaction_date,
-        created_by: user.id,
-      })
+  if (isPartnerPaidExpense(formData)) {
+    const contributionResult = await syncAutoContributionForTransaction(
+      supabase,
+      businessId,
+      transaction.id,
+      formData
+    )
 
-    if (capitalError) {
-      console.error('Failed to create auto capital contribution:', capitalError)
-      // Don't fail the whole transaction, just log it
+    if (contributionResult.error) {
+      console.error('Failed to create auto capital contribution:', contributionResult.error)
+      return { error: contributionResult.error }
     } else {
       // Log the auto capital contribution
       await logActivity({
@@ -107,28 +229,7 @@ export async function createTransaction(
         },
       })
 
-      // Auto-update equity by default (can be disabled in settings)
-      const { data: business } = await supabase
-        .from('businesses')
-        .select('auto_update_equity_on_contribution')
-        .eq('id', businessId)
-        .single()
-
-      // Default to TRUE if field doesn't exist or is null
-      const shouldAutoUpdate = business?.auto_update_equity_on_contribution !== false
-
-      if (shouldAutoUpdate) {
-        const { applyEquityFromContributions } = await import('./equity')
-        const equityResult = await applyEquityFromContributions(businessId, {
-          skipOwnerCheck: true, // Allow any member to trigger auto-update
-        })
-
-        if (!equityResult.error) {
-          console.log('[Auto-Update] Equity updated after personal expense contribution')
-        } else {
-          console.error('[Auto-Update] Failed to update equity:', equityResult.error)
-        }
-      }
+      await autoUpdateEquityIfEnabled(supabase, businessId)
     }
   }
 
@@ -171,13 +272,49 @@ export async function updateTransaction(
   // Verify user is member of business
   const { data: member } = await supabase
     .from('business_members')
-    .select('id')
+    .select('role')
     .eq('business_id', businessId)
     .eq('user_id', user.id)
     .single()
 
   if (!member) {
     return { error: 'Anda bukan anggota bisnis ini' }
+  }
+
+  if (
+    isPartnerPaidExpense(formData) &&
+    member.role !== 'owner' &&
+    formData.payment_source !== user.id
+  ) {
+    return { error: 'Anda hanya dapat mencatat pengeluaran pribadi atas nama sendiri' }
+  }
+
+  const { data: existingTransaction } = await supabase
+    .from('transactions')
+    .select('id, type, amount, payment_source, paid_by_user_id, item_name, transaction_date')
+    .eq('id', transactionId)
+    .eq('business_id', businessId)
+    .single()
+
+  if (!existingTransaction) {
+    return { error: 'Transaksi tidak ditemukan' }
+  }
+
+  if (formData.type === 'expense' && formData.payment_source === 'business') {
+    const { getBusinessCash } = await import('@/lib/supabase/queries')
+    const businessCash = await getBusinessCash(businessId)
+    const previousBusinessExpense =
+      existingTransaction.type === 'expense' &&
+      existingTransaction.payment_source === 'business'
+        ? Number(existingTransaction.amount)
+        : 0
+    const availableCashForEdit = businessCash + previousBusinessExpense
+
+    if (formData.amount > availableCashForEdit) {
+      return {
+        error: `Kas bisnis tidak mencukupi. Kas tersedia: Rp ${availableCashForEdit.toLocaleString('id-ID')}. Gunakan "Dibayar oleh mitra" jika ingin bayar pakai uang pribadi.`,
+      }
+    }
   }
 
   // Update transaction
@@ -203,6 +340,29 @@ export async function updateTransaction(
   if (error) {
     return { error: error.message }
   }
+
+  const oldContributionDelete = await deleteAutoContributionForTransaction(
+    supabase,
+    businessId,
+    existingTransaction
+  )
+
+  if (oldContributionDelete.error) {
+    return { error: oldContributionDelete.error }
+  }
+
+  const contributionResult = await syncAutoContributionForTransaction(
+    supabase,
+    businessId,
+    transactionId,
+    formData
+  )
+
+  if (contributionResult.error) {
+    return { error: contributionResult.error }
+  }
+
+  await autoUpdateEquityIfEnabled(supabase, businessId)
 
   // Log activity
   await logActivity({
@@ -250,6 +410,27 @@ export async function deleteTransaction(transactionId: string, businessId: strin
     return { error: 'Hanya pemilik yang dapat menghapus transaksi' }
   }
 
+  const { data: transactionToDelete } = await supabase
+    .from('transactions')
+    .select('id, type, amount, payment_source, paid_by_user_id, item_name, transaction_date')
+    .eq('id', transactionId)
+    .eq('business_id', businessId)
+    .single()
+
+  if (!transactionToDelete) {
+    return { error: 'Transaksi tidak ditemukan' }
+  }
+
+  const contributionDelete = await deleteAutoContributionForTransaction(
+    supabase,
+    businessId,
+    transactionToDelete
+  )
+
+  if (contributionDelete.error) {
+    return { error: contributionDelete.error }
+  }
+
   // Delete transaction
   const { error } = await supabase
     .from('transactions')
@@ -274,6 +455,8 @@ export async function deleteTransaction(transactionId: string, businessId: strin
   })
 
   revalidatePath(`/bisnis/${businessId}/transaksi`)
+  revalidatePath(`/bisnis/${businessId}/modal`)
   revalidatePath(`/bisnis/${businessId}`)
+  await autoUpdateEquityIfEnabled(supabase, businessId)
   return { success: true }
 }

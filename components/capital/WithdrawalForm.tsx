@@ -271,7 +271,7 @@ export function WithdrawalForm({
 
           {amount > currentBalance && (
             <p className="text-center text-sm text-red-600 mt-3">
-              Jumlah penarikan melebihi saldo ekuitas Anda!
+              Jumlah penarikan melebihi saldo laba Anda!
             </p>
           )}
         </div>

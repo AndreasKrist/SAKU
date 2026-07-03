@@ -185,7 +185,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
                             </p>
                           </div>
                           <div className="bg-blue-50 p-2 rounded">
-                            <p className="text-xs text-muted-foreground">Laba</p>
+                            <p className="text-xs text-muted-foreground">Hak Laba</p>
                             <p className="font-semibold text-blue-600 text-xs sm:text-sm">
                               {formatRupiah(capitalAccount.total_profit_allocated)}
                             </p>
@@ -197,7 +197,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
                             </p>
                           </div>
                           <div className="bg-purple-50 p-2 rounded">
-                            <p className="text-xs text-muted-foreground">Saldo</p>
+                            <p className="text-xs text-muted-foreground">Saldo Laba</p>
                             <p className="font-semibold text-purple-600 text-xs sm:text-sm">
                               {formatRupiah(capitalAccount.current_balance)}
                             </p>
@@ -229,7 +229,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
               </p>
             </div>
             <div className="text-center p-3 sm:p-4 bg-blue-50 rounded-lg">
-              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Laba</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Hak Laba</p>
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-blue-600">
                 {formatRupiah(
                   capitalAccounts.reduce((sum, acc) => sum + acc.total_profit_allocated, 0)
@@ -245,7 +245,7 @@ export default async function MitraPage({ params }: { params: { id: string } }) 
               </p>
             </div>
             <div className="text-center p-3 sm:p-4 bg-purple-50 rounded-lg">
-              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Modal</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1">Saldo Laba</p>
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-purple-600">
                 {formatRupiah(
                   capitalAccounts.reduce((sum, acc) => sum + acc.current_balance, 0)

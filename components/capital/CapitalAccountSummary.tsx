@@ -42,7 +42,7 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Total Laba</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Hak Laba</CardTitle>
             <DollarSign className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
@@ -113,7 +113,7 @@ export function CapitalAccountSummary({ accounts }: CapitalAccountSummaryProps) 
                     </p>
                   </div>
                   <div className="text-center flex sm:block items-center justify-between p-2 bg-blue-50 rounded">
-                    <p className="text-xs text-muted-foreground sm:mb-1">Laba</p>
+                    <p className="text-xs text-muted-foreground sm:mb-1">Hak Laba</p>
                     <p className="font-semibold text-blue-600 text-xs sm:text-sm">
                       {formatRupiah(account.total_profit_allocated)}
                     </p>
